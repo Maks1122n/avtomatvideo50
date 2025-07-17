@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaFlux Hub - Instagram Reels Automation Platform</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Боковое меню -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🚀</span>
+                    <span class="logo-text">MediaFlux Hub</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="/" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Панель управления</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/accounts" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-text">Аккаунты</span>
+                        <span class="nav-badge" id="accounts-badge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/content" class="nav-link">
+                        <span class="nav-icon">📁</span>
+                        <span class="nav-text">Контент</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/analytics" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Аналитика</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/settings" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-text">Настройки</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div class="user-details">
+                        <div class="user-name" id="current-user">Admin</div>
+                        <div class="user-role">Администратор</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Заголовок с индикатором статуса -->
+            <header class="page-header">
+                <div class="header-content">
+                    <h1 class="page-title">Центр управления</h1>
+                    <p class="page-subtitle">Полный контроль над вашей социальной империей</p>
+                </div>
+                <div class="status-indicator live" id="system-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">MediaFlux Hub Engine активен</span>
+                </div>
+            </header>
+
+            <!-- Статистические карточки -->
+            <section class="stats-grid">
+                <div class="stat-card blue-gradient">
+                    <div class="stat-content">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="accounts-count">0</div>
+                            <div class="stat-label">Под управлением ИИ</div>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <span class="change-icon">📈</span>
+                        <span class="change-text">+12%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card green-gradient">
+                    <div class="stat-content">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="automation-status">3</div>
+                            <div class="stat-label">Автоматизация работает</div>
+                        </div>
+                    </div>
+                    <div class="stat-badge live">LIVE</div>
+                </div>
+
+                <div class="stat-card purple-gradient">
+                    <div class="stat-content">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="posts-published">0</div>
+                            <div class="stat-label">Опубликовано системой</div>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <span class="change-icon">📈</span>
+                        <span class="change-text">+23%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card red-gradient">
+                    <div class="stat-content">
+                        <div class="stat-icon">👁️</div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="unique-views">0</div>
+                            <div class="stat-label">Уникальных просмотров</div>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <span class="change-icon">📈</span>
+                        <span class="change-text">+8%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Кнопки действий -->
+            <section class="action-buttons">
+                <button class="action-btn blue-gradient" onclick="openAddAccountModal()">
+                    <span class="btn-icon">👤</span>
+                    <div class="btn-content">
+                        <div class="btn-title">Добавить аккаунт</div>
+                        <div class="btn-subtitle">Новый социальный профиль</div>
+                    </div>
+                    <span class="btn-arrow">→</span>
+                </button>
+
+                <button class="action-btn green-gradient" onclick="openContentUpload()">
+                    <span class="btn-icon">📤</span>
+                    <div class="btn-content">
+                        <div class="btn-title">Загрузить контент</div>
+                        <div class="btn-subtitle">Видео и изображения</div>
+                    </div>
+                    <span class="btn-arrow">→</span>
+                </button>
+
+                <button class="action-btn orange-gradient" onclick="openTargetingSettings()">
+                    <span class="btn-icon">🎯</span>
+                    <div class="btn-content">
+                        <div class="btn-title">Настроить таргетинг</div>
+                        <div class="btn-subtitle">Аудитория и расписание</div>
+                    </div>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </section>
+
+            <!-- Активные аккаунты -->
+            <section class="active-accounts">
+                <div class="section-header">
+                    <h2 class="section-title">Активные аккаунты</h2>
+                    <button class="refresh-btn" onclick="refreshAccounts()">
+                        <span>🔄</span>
+                    </button>
+                </div>
+                <div class="accounts-grid" id="accounts-list">
+                    <!-- Загружается динамически -->
+                    <div class="account-card placeholder">
+                        <div class="loading-shimmer"></div>
+                        <div class="account-info">
+                            <div class="loading-text"></div>
+                            <div class="loading-text small"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Нижние виджеты -->
+            <section class="bottom-widgets">
+                <div class="widget ai-suggestions">
+                    <div class="widget-header">
+                        <span class="widget-icon">💡</span>
+                        <h3 class="widget-title">Совет от ИИ-аналитика</h3>
+                    </div>
+                    <div class="widget-content" id="ai-suggestion">
+                        <div class="loading-text"></div>
+                        <div class="loading-text small"></div>
+                    </div>
+                </div>
+
+                <div class="widget top-posts">
+                    <div class="widget-header">
+                        <span class="widget-icon">⭐</span>
+                        <h3 class="widget-title">Топ-посты недели</h3>
+                    </div>
+                    <div class="widget-content" id="top-posts">
+                        <!-- Загружается динамически -->
+                        <div class="loading-list">
+                            <div class="loading-item"></div>
+                            <div class="loading-item"></div>
+                            <div class="loading-item"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal" id="add-account-modal">
+            <div class="modal-header">
+                <h3>Добавить Instagram аккаунт</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-account-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" required placeholder="@username">
+                    </div>
+                    <div class="form-group">
+                        <label>Access Token</label>
+                        <input type="password" name="access_token" required placeholder="Instagram Graph API Token">
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram Account ID</label>
+                        <input type="text" name="instagram_account_id" required placeholder="Account ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Дневной лимит постов</label>
+                        <input type="number" name="daily_limit" value="5" min="1" max="20">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                <button type="submit" form="add-account-form" class="btn btn-primary">Добавить аккаунт</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div id="notifications-container"></div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/ui.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 
