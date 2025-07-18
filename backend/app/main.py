@@ -62,11 +62,28 @@ templates = Jinja2Templates(directory="templates")
 # Статические файлы
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Импорт API роутеров
+try:
+    from app.api import dashboard, accounts, content, tasks, system, proxies
+    API_AVAILABLE = True
+except ImportError:
+    logger.warning("API modules not available, running in limited mode")
+    API_AVAILABLE = False
+
 # Главная страница с веб-интерфейсом
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     """Главная страница MediaFlux Hub Dashboard"""
     return templates.TemplateResponse("dashboard.html", {"request": request})
+
+# Подключение API роутеров
+if API_AVAILABLE:
+    app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
+    app.include_router(accounts.router, prefix="/api/accounts", tags=["Accounts"])
+    app.include_router(content.router, prefix="/api/content", tags=["Content"])
+    app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
+    app.include_router(system.router, prefix="/api/system", tags=["System"])
+    app.include_router(proxies.router, prefix="/api/proxies", tags=["Proxies"])
 
 # API endpoint для получения данных
 @app.get("/api")
@@ -76,7 +93,15 @@ async def api_root():
         "message": "MediaFlux Hub API", 
         "version": "1.0.0",
         "docs": "/docs",
-        "health": "/health"
+        "health": "/health",
+        "endpoints": {
+            "dashboard": "/api/dashboard",
+            "accounts": "/api/accounts", 
+            "content": "/api/content",
+            "tasks": "/api/tasks",
+            "system": "/api/system",
+            "proxies": "/api/proxies"
+        } if API_AVAILABLE else "Limited mode - API not available"
     }
 
 if __name__ == "__main__":

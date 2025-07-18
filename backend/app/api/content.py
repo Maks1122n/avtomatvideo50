@@ -1,142 +1,111 @@
 """
-MediaFlux Hub - Content API
-API для управления видео контентом
+MediaFlux Hub - Content Management API
+Управление видео контентом
 """
-import logging
+
+from fastapi import APIRouter, HTTPException
+from typing import List, Optional
+import os
 from datetime import datetime
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
-from pydantic import BaseModel
-
-from app.config import settings
-from app.database import SessionLocal, ContentFolder
-from app.api.auth import verify_token
-from app.services.content_service import MediaFluxContentService
-
-logger = logging.getLogger("mediaflux_hub.content")
+import uuid
 
 router = APIRouter()
-content_service = MediaFluxContentService()
 
-# Pydantic модели
-class FolderResponse(BaseModel):
-    folder_id: str
-    name: str
-    path: str
-    total_videos: int
-    used_videos: int
-    posts_per_week: int
-    category: str
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-
-class ContentStats(BaseModel):
-    total_folders: int
-    active_folders: int
-    total_videos: int
-    categories: Dict[str, Any]
-    top_folders: List[tuple]
-    average_videos_per_folder: float
-
-
-@router.get("/folders", response_model=List[FolderResponse])
-async def get_content_folders(current_user: dict = Depends(verify_token)):
-    """Получение списка папок с контентом"""
-    logger.info(f"📁 MediaFlux Hub: Запрос папок контента от {current_user['username']}")
-    
-    try:
-        db = SessionLocal()
-        folders = db.query(ContentFolder).order_by(ContentFolder.created_at.desc()).all()
-        
-        result = [
-            FolderResponse(
-                folder_id=folder.folder_id,
-                name=folder.name,
-                path=folder.path,
-                total_videos=folder.total_videos,
-                used_videos=folder.used_videos,
-                posts_per_week=folder.posts_per_week,
-                category=folder.category,
-                is_active=folder.is_active,
-                created_at=folder.created_at,
-                updated_at=folder.updated_at
-            )
-            for folder in folders
-        ]
-        
-        db.close()
-        return result
-        
-    except Exception as e:
-        logger.error(f"💥 MediaFlux Hub: Ошибка получения папок: {e}")
-        raise HTTPException(status_code=500, detail="Ошибка получения папок контента")
-
-
-@router.post("/scan")
-async def scan_content_folders(current_user: dict = Depends(verify_token)):
-    """Сканирование папок с контентом"""
-    logger.info(f"🔍 MediaFlux Hub: Сканирование контента от {current_user['username']}")
-    
-    try:
-        db = SessionLocal()
-        folders = await content_service.scan_content_folders(db)
-        db.close()
-        
-        return {
-            "message": f"Сканирование завершено. Найдено {len(folders)} папок",
-            "folders_count": len(folders),
-            "scanned_at": datetime.now().isoformat()
+@router.get("/folders")
+async def get_content_folders():
+    """Получить список папок с контентом"""
+    folders = [
+        {
+            "name": "motivation",
+            "display_name": "Мотивация",
+            "video_count": 23,
+            "total_size": "450 MB",
+            "last_upload": "2 часа назад",
+            "status": "active"
+        },
+        {
+            "name": "business", 
+            "display_name": "Бизнес",
+            "video_count": 18,
+            "total_size": "320 MB",
+            "last_upload": "5 часов назад",
+            "status": "active"
+        },
+        {
+            "name": "lifestyle",
+            "display_name": "Лайфстайл", 
+            "video_count": 31,
+            "total_size": "580 MB",
+            "last_upload": "1 час назад",
+            "status": "active"
+        },
+        {
+            "name": "entertainment",
+            "display_name": "Развлечения",
+            "video_count": 15,
+            "total_size": "280 MB", 
+            "last_upload": "6 часов назад",
+            "status": "active"
         }
-        
-    except Exception as e:
-        logger.error(f"💥 MediaFlux Hub: Ошибка сканирования: {e}")
-        raise HTTPException(status_code=500, detail="Ошибка сканирования контента")
-
-
-@router.get("/stats", response_model=ContentStats)
-async def get_content_stats(current_user: dict = Depends(verify_token)):
-    """Получение статистики контента"""
-    try:
-        db = SessionLocal()
-        stats = await content_service.get_content_statistics(db)
-        db.close()
-        
-        return ContentStats(**stats)
-        
-    except Exception as e:
-        logger.error(f"💥 MediaFlux Hub: Ошибка получения статистики контента: {e}")
-        raise HTTPException(status_code=500, detail="Ошибка получения статистики")
-
-
-@router.delete("/folders/{folder_id}")
-async def delete_content_folder(
-    folder_id: str,
-    current_user: dict = Depends(verify_token)
-):
-    """Удаление папки контента"""
-    logger.info(f"🗑️ MediaFlux Hub: Удаление папки {folder_id}")
+    ]
     
-    try:
-        db = SessionLocal()
-        
-        folder = db.query(ContentFolder).filter(ContentFolder.folder_id == folder_id).first()
-        if not folder:
-            db.close()
-            raise HTTPException(status_code=404, detail="Папка не найдена")
-        
-        folder_name = folder.name
-        db.delete(folder)
-        db.commit()
-        db.close()
-        
-        return {
-            "message": f"Папка {folder_name} удалена",
-            "deleted_at": datetime.now().isoformat()
+    return {
+        "folders": folders,
+        "total_videos": sum(f["video_count"] for f in folders),
+        "total_size": "1.63 GB"
+    }
+
+@router.get("/videos")
+async def get_videos(folder: Optional[str] = None):
+    """Получить список видео файлов"""
+    videos = [
+        {
+            "id": "video_001",
+            "filename": "success_mindset_tips.mp4",
+            "folder": "motivation",
+            "size": "15.2 MB",
+            "duration": "0:45",
+            "uploaded": "2024-01-15 14:30",
+            "used_count": 5,
+            "last_used": "1 час назад",
+            "status": "available"
+        },
+        {
+            "id": "video_002", 
+            "filename": "entrepreneurship_basics.mp4",
+            "folder": "business",
+            "size": "22.8 MB",
+            "duration": "1:20",
+            "uploaded": "2024-01-15 12:15",
+            "used_count": 3,
+            "last_used": "3 часа назад",
+            "status": "available"
+        },
+        {
+            "id": "video_003",
+            "filename": "morning_routine.mp4", 
+            "folder": "lifestyle",
+            "size": "18.5 MB",
+            "duration": "1:05",
+            "uploaded": "2024-01-15 09:45",
+            "used_count": 7,
+            "last_used": "30 минут назад",
+            "status": "available"
         }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"💥 MediaFlux Hub: Ошибка удаления папки: {e}")
-        raise HTTPException(status_code=500, detail="Ошибка удаления папки") 
+    ]
+    
+    if folder:
+        videos = [v for v in videos if v["folder"] == folder]
+    
+    return videos
+
+@router.post("/upload")
+async def upload_video(video_data: dict):
+    """Загрузить новое видео"""
+    # Симуляция загрузки
+    return {
+        "message": "Видео успешно загружено",
+        "video_id": str(uuid.uuid4()),
+        "filename": video_data.get("filename", "new_video.mp4"),
+        "status": "processing"
+    } 

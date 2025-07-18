@@ -84,38 +84,45 @@ class MediaFluxDashboard {
 
     async loadDashboardStats() {
         try {
-            // Simulated API calls - replace with real endpoints
-            const stats = {
-                totalAccounts: 12,
-                totalPosts: 45,
-                scheduledPosts: 23,
-                totalViews: 125000
-            };
+            // Загрузка реальных данных из API
+            const response = await fetch('/api/dashboard/stats');
+            const stats = await response.json();
 
             // Update stats cards
             this.updateStatsCards(stats);
             
             // Update badges
-            document.getElementById('accounts-count').textContent = stats.totalAccounts;
+            document.getElementById('accounts-count').textContent = stats.active_accounts;
             document.getElementById('content-count').textContent = '156';
-            document.getElementById('proxies-count').textContent = '8';
+            document.getElementById('proxies-count').textContent = stats.proxies_active;
             
         } catch (error) {
             console.error('Ошибка загрузки статистики:', error);
+            this.showNotification('Ошибка загрузки статистики', 'error');
         }
     }
 
     updateStatsCards(stats) {
-        document.getElementById('total-accounts').textContent = stats.totalAccounts;
-        document.getElementById('total-posts').textContent = stats.totalPosts;
-        document.getElementById('scheduled-posts').textContent = stats.scheduledPosts;
-        document.getElementById('total-views').textContent = this.formatNumber(stats.totalViews);
+        document.getElementById('total-accounts').textContent = stats.active_accounts;
+        document.getElementById('total-posts').textContent = stats.posts_today;
+        document.getElementById('scheduled-posts').textContent = stats.posts_scheduled;
+        document.getElementById('total-views').textContent = this.formatNumber(stats.total_views);
     }
 
     async checkSystemHealth() {
         try {
-            const response = await fetch('/health');
-            const health = await response.json();
+            // Проверяем как базовое здоровье, так и детальный статус
+            const healthResponse = await fetch('/health');
+            const health = await healthResponse.json();
+            
+            // Пытаемся получить детальный статус системы
+            let systemStatus = null;
+            try {
+                const statusResponse = await fetch('/api/dashboard/system-status');
+                systemStatus = await statusResponse.json();
+            } catch (e) {
+                console.log('Детальный статус недоступен');
+            }
             
             const statusElement = document.getElementById('system-status');
             const statusDot = statusElement.querySelector('.status-dot');
@@ -123,7 +130,8 @@ class MediaFluxDashboard {
             
             if (health.status === 'healthy') {
                 statusDot.className = 'status-dot online';
-                statusText.textContent = 'Online';
+                statusText.textContent = systemStatus ? 
+                    `Online (${systemStatus.uptime})` : 'Online';
             } else {
                 statusDot.className = 'status-dot offline';
                 statusText.textContent = 'Offline';
@@ -141,47 +149,41 @@ class MediaFluxDashboard {
     }
 
     async loadRecentActivity() {
-        const activityList = document.getElementById('activity-list');
-        
-        // Simulated activity data
-        const activities = [
-            {
-                type: 'success',
-                icon: 'fa-check',
-                message: 'Публикация в @lifestyle_account успешно завершена',
-                time: '2 минуты назад'
-            },
-            {
-                type: 'info',
-                icon: 'fa-clock',
-                message: 'Запланирована публикация на 16:45',
-                time: '8 минут назад'
-            },
-            {
-                type: 'warning',
-                icon: 'fa-exclamation-triangle',
-                message: 'Прокси proxy-us-01 требует проверки',
-                time: '15 минут назад'
-            },
-            {
-                type: 'success',
-                icon: 'fa-upload',
-                message: 'Загружено 5 новых видео в папку motivation',
-                time: '23 минуты назад'
-            }
-        ];
+        try {
+            const response = await fetch('/api/dashboard/recent-activity');
+            const activities = await response.json();
+            const activityList = document.getElementById('activity-list');
 
-        activityList.innerHTML = activities.map(activity => `
-            <div class="activity-item">
-                <div class="activity-icon ${activity.type}">
-                    <i class="fas ${activity.icon}"></i>
-                </div>
-                <div class="activity-content">
-                    <p>${activity.message}</p>
-                    <small>${activity.time}</small>
-                </div>
-            </div>
-        `).join('');
+            // Map activity types to icons and colors
+            const typeConfig = {
+                post: { icon: 'fa-check', type: 'success' },
+                upload: { icon: 'fa-upload', type: 'info' },
+                schedule: { icon: 'fa-calendar', type: 'info' },
+                proxy: { icon: 'fa-exchange-alt', type: 'warning' },
+                account: { icon: 'fa-user-plus', type: 'success' },
+                error: { icon: 'fa-exclamation-triangle', type: 'error' }
+            };
+
+            activityList.innerHTML = activities.map(activity => {
+                const config = typeConfig[activity.type] || typeConfig.info;
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon ${config.type}">
+                            <i class="fas ${config.icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>${activity.action}${activity.account ? ` в ${activity.account}` : ''}</p>
+                            <small>${activity.time}</small>
+                            ${activity.details ? `<small class="text-muted d-block">${activity.details}</small>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+        } catch (error) {
+            console.error('Ошибка загрузки активности:', error);
+            this.showNotification('Ошибка загрузки активности', 'error');
+        }
     }
 
     navigateToPage(page, updateHistory = true) {
@@ -253,15 +255,56 @@ class MediaFluxDashboard {
     }
 
     showAddAccountModal() {
-        this.showNotification('Функция добавления аккаунта в разработке', 'info');
+        // Переключаемся на страницу аккаунтов
+        this.navigateToPage('accounts');
+        this.showNotification('Перейдите на страницу аккаунтов для добавления', 'info');
     }
 
     showUploadContentModal() {
-        this.showNotification('Функция загрузки контента в разработке', 'info');
+        // Переключаемся на страницу контента
+        this.navigateToPage('content');
+        this.showNotification('Перейдите на страницу контента для загрузки', 'info');
     }
 
     showCreateScheduleModal() {
-        this.showNotification('Функция создания расписания в разработке', 'info');
+        // Переключаемся на планировщик
+        this.navigateToPage('scheduler');
+        this.showNotification('Перейдите в планировщик для создания расписания', 'info');
+    }
+
+    async loadAccountsData() {
+        try {
+            const response = await fetch('/api/accounts');
+            const data = await response.json();
+            
+            // Обновляем счетчики
+            document.getElementById('accounts-count').textContent = data.active;
+            
+            return data.accounts;
+        } catch (error) {
+            console.error('Ошибка загрузки аккаунтов:', error);
+            return [];
+        }
+    }
+
+    async testAccountConnection(accountId) {
+        try {
+            const response = await fetch(`/api/accounts/${accountId}/test-connection`, {
+                method: 'POST'
+            });
+            const result = await response.json();
+            
+            if (result.connection_status === 'success') {
+                this.showNotification('Соединение с аккаунтом успешно', 'success');
+            } else {
+                this.showNotification('Ошибка соединения с аккаунтом', 'error');
+            }
+            
+            return result;
+        } catch (error) {
+            this.showNotification('Ошибка проверки соединения', 'error');
+            return null;
+        }
     }
 
     async refreshActivity() {
