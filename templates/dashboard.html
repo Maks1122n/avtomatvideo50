@@ -5,296 +5,765 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediaFlux Hub - Instagram Reels Automation</title>
     <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ МОДАЛЬНЫХ ОКОН -->
+    <style>
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            border: 2px solid var(--primary);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close:hover {
+            color: var(--primary);
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .modal h2 {
+            color: var(--primary);
+            margin: 0 0 20px 0;
+            padding-right: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .form-actions button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-actions button[type="submit"],
+        .form-actions .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-actions button[type="button"],
+        .form-actions .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .form-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--primary);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+        }
+
+        .upload-area:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+        }
+
+        .upload-area p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #10b981;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .notification.info {
+            background: #3b82f6;
+        }
+
+        /* Сделать кнопки действий ТОЧНО рабочими */
+        .action-btn {
+            cursor: pointer !important;
+            pointer-events: all !important;
+            user-select: none !important;
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
+    <!-- Уведомления -->
+    <div id="notification" class="notification"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-video"></i>
-                    <h2>MediaFlux Hub</h2>
-                </div>
+            <div class="logo">
+                <span class="logo-icon">📱</span>
+                <span class="logo-text">MediaFlux Hub</span>
             </div>
             
-            <div class="sidebar-menu">
-                <a href="#dashboard" class="menu-item active" data-page="dashboard">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#accounts" class="menu-item" data-page="accounts">
-                    <i class="fas fa-users"></i>
-                    <span>Аккаунты</span>
-                    <span class="badge" id="accounts-count">0</span>
-                </a>
-                <a href="#content" class="menu-item" data-page="content">
-                    <i class="fas fa-folder-open"></i>
-                    <span>Контент</span>
-                    <span class="badge" id="content-count">0</span>
-                </a>
-                <a href="#scheduler" class="menu-item" data-page="scheduler">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Планировщик</span>
-                </a>
-                <a href="#analytics" class="menu-item" data-page="analytics">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Аналитика</span>
-                </a>
-                <a href="#proxies" class="menu-item" data-page="proxies">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Прокси</span>
-                    <span class="badge" id="proxies-count">0</span>
-                </a>
-                <a href="#settings" class="menu-item" data-page="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Настройки</span>
-                </a>
-            </div>
-            
-            <div class="sidebar-footer">
-                <div class="system-status">
-                    <div class="status-indicator" id="system-status">
-                        <span class="status-dot online"></span>
-                        <span>Online</span>
-                    </div>
-                </div>
-            </div>
+            <ul class="nav-menu">
+                <li>
+                    <a href="#" class="nav-link active">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/accounts" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Аккаунты
+                        <span class="nav-badge" id="accountsCount">0</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/content" class="nav-link">
+                        <span class="nav-icon">📁</span>
+                        Контент
+                        <span class="nav-badge" id="contentCount">156</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/schedule" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        Планировщик
+                    </a>
+                </li>
+                <li>
+                    <a href="/analytics" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Аналитика
+                    </a>
+                </li>
+                <li>
+                    <a href="/proxies" class="nav-link">
+                        <span class="nav-icon">🛡️</span>
+                        Прокси
+                        <span class="nav-badge">—</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/settings" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Настройки
+                    </a>
+                </li>
+            </ul>
         </nav>
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <h1 id="page-title">Dashboard</h1>
-                    <span class="breadcrumb">Главная / Dashboard</span>
+            <header class="page-header">
+                <div class="header-content">
+                    <h1>Dashboard</h1>
+                    <nav class="breadcrumb">
+                        <span>Главная</span> / <span>Dashboard</span>
+                    </nav>
                 </div>
-                <div class="header-right">
+                <div class="header-actions">
                     <button class="btn btn-primary" id="start-automation">
-                        <i class="fas fa-play"></i>
+                        <span class="btn-icon">▶️</span>
                         Запустить автоматизацию
                     </button>
                     <div class="user-profile">
-                        <i class="fas fa-user"></i>
-                        <span>Administrator</span>
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">Administrator</span>
                     </div>
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
-            <div class="content" id="dashboard-content">
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="total-accounts">0</h3>
-                            <p>Активных аккаунтов</p>
-                            <span class="stat-change positive">+5 за сегодня</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="total-posts">0</h3>
-                            <p>Опубликовано сегодня</p>
-                            <span class="stat-change positive">+12 за сегодня</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="scheduled-posts">0</h3>
-                            <p>Запланировано</p>
-                            <span class="stat-change">На завтра</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="total-views">0</h3>
-                            <p>Просмотров</p>
-                            <span class="stat-change positive">+2.5K за сегодня</span>
-                        </div>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="activeAccounts">0</div>
+                        <div class="stat-label">Активных аккаунтов</div>
+                        <div class="stat-change">+5 за сегодня</div>
                     </div>
                 </div>
 
-                <!-- Action Cards -->
-                <div class="action-grid">
-                    <div class="action-card">
-                        <div class="action-header">
-                            <h3>Быстрые действия</h3>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="action-btn" id="add-account">
-                                <i class="fas fa-plus"></i>
-                                <span>Добавить аккаунт</span>
-                            </button>
-                            <button class="action-btn" id="upload-content">
-                                <i class="fas fa-upload"></i>
-                                <span>Загрузить контент</span>
-                            </button>
-                            <button class="action-btn" id="create-schedule">
-                                <i class="fas fa-calendar-plus"></i>
-                                <span>Создать расписание</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-card">
-                        <div class="activity-header">
-                            <h3>Активность системы</h3>
-                            <button class="refresh-btn" id="refresh-activity">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                        <div class="activity-list" id="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon success">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <p>Публикация в @account1 успешно завершена</p>
-                                    <small>2 минуты назад</small>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon info">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <p>Запланирована публикация на 14:30</p>
-                                    <small>5 минут назад</small>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <p>Прокси server1 требует проверки</p>
-                                    <small>10 минут назад</small>
-                                </div>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📤</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="postsToday">0</div>
+                        <div class="stat-label">Опубликовано сегодня</div>
+                        <div class="stat-change">+12 за сегодня</div>
                     </div>
                 </div>
 
-                <!-- Charts Section -->
-                <div class="charts-section">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>Статистика публикаций</h3>
-                            <select class="chart-filter">
-                                <option value="7d">7 дней</option>
-                                <option value="30d">30 дней</option>
-                                <option value="90d">90 дней</option>
-                            </select>
-                        </div>
-                        <div class="chart-content">
-                            <canvas id="postsChart"></canvas>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏰</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="scheduledPosts">0</div>
+                        <div class="stat-label">Запланировано</div>
+                        <div class="stat-change">На завтра</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">👁️</div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalViews">0</div>
+                        <div class="stat-label">Просмотров</div>
+                        <div class="stat-change">+2.5K за сегодня</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Other Page Contents (hidden by default) -->
-            <div class="content hidden" id="accounts-content">
-                <h2>Управление аккаунтами</h2>
-                <p>Здесь будет интерфейс управления Instagram аккаунтами</p>
+            <!-- Quick Actions -->
+            <div class="content-section">
+                <h2>Быстрые действия</h2>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="showAddAccountModal()">
+                        <span class="btn-icon">➕</span>
+                        <span class="btn-text">Добавить аккаунт</span>
+                    </button>
+                    
+                    <button class="action-btn" onclick="showUploadModal()">
+                        <span class="btn-icon">📤</span>
+                        <span class="btn-text">Загрузить контент</span>
+                    </button>
+                    
+                    <button class="action-btn" onclick="showScheduleModal()">
+                        <span class="btn-icon">📅</span>
+                        <span class="btn-text">Создать расписание</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="content hidden" id="content-content">
-                <h2>Управление контентом</h2>
-                <p>Здесь будет интерфейс управления видео контентом</p>
-            </div>
-
-            <div class="content hidden" id="scheduler-content">
-                <h2>Планировщик публикаций</h2>
-                <p>Здесь будет календарь и настройки расписания</p>
-            </div>
-
-            <div class="content hidden" id="analytics-content">
-                <h2>Аналитика и отчеты</h2>
-                <p>Здесь будут детальные графики и статистика</p>
-            </div>
-
-            <div class="content hidden" id="proxies-content">
-                <h2>Управление прокси</h2>
-                <p>Здесь будет интерфейс настройки прокси серверов</p>
-            </div>
-
-            <div class="content hidden" id="settings-content">
-                <h2>Настройки системы</h2>
-                <p>Здесь будут общие настройки MediaFlux Hub</p>
+            <!-- Activity Feed -->
+            <div class="activity-section">
+                <div class="section-header">
+                    <h2>Активность системы</h2>
+                    <button class="refresh-btn" onclick="loadRecentActivity()">🔄</button>
+                </div>
+                <div class="activity-feed" id="activityFeed">
+                    <div class="activity-item">
+                        <div class="activity-icon">📤</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Загрузка данных...</div>
+                            <div class="activity-time">Сейчас</div>
+                        </div>
+                        <div class="activity-status status-info">⏳</div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay hidden" id="loading-overlay">
-        <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Загрузка...</p>
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+
+    <!-- Модальное окно добавления аккаунта -->
+    <div id="addAccountModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('addAccountModal')">&times;</button>
+            <h2>Добавить Instagram аккаунт</h2>
+            
+            <form id="quickAddAccountForm">
+                <div class="form-group">
+                    <label>Instagram Username:</label>
+                    <input type="text" name="username" placeholder="@your_account" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Instagram Access Token:</label>
+                    <textarea name="access_token" placeholder="Вставьте ваш Instagram Graph API токен" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Instagram Account ID:</label>
+                    <input type="text" name="account_id" placeholder="1234567890123456" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Прокси (опционально):</label>
+                    <input type="text" name="proxy" placeholder="http://user:pass@ip:port">
+                </div>
+                
+                <div class="form-group">
+                    <label>Дневной лимит постов:</label>
+                    <select name="daily_limit">
+                        <option value="2">2 поста в день</option>
+                        <option value="5" selected>5 постов в день</option>
+                        <option value="8">8 постов в день</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="testQuickConnection()">
+                        Тест соединения
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Добавить аккаунт
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Notification Container -->
-    <div class="notification-container" id="notification-container"></div>
+    <!-- Модальное окно загрузки контента -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('uploadModal')">&times;</button>
+            <h2>Загрузить видео контент</h2>
+            
+            <div class="upload-area" onclick="document.getElementById('quickVideoFiles').click()">
+                <p>📤 Перетащите видео сюда или нажмите для выбора</p>
+                <input type="file" id="quickVideoFiles" multiple accept="video/*" style="display: none;">
+            </div>
+            
+            <div class="form-group">
+                <label>Категория видео:</label>
+                <select id="quickVideoCategory">
+                    <option value="motivation">🔥 Мотивация</option>
+                    <option value="lifestyle">✨ Лайфстайл</option>
+                    <option value="business">💼 Бизнес</option>
+                    <option value="entertainment">🎉 Развлечения</option>
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('uploadModal')">
+                    Отмена
+                </button>
+                <button type="button" class="btn-primary" onclick="uploadQuickVideos()">
+                    Загрузить видео
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <!-- JavaScript -->
+    <!-- Модальное окно создания расписания -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('scheduleModal')">&times;</button>
+            <h2>Создать расписание публикаций</h2>
+            
+            <form id="quickScheduleForm">
+                <div class="form-group">
+                    <label>Период планирования:</label>
+                    <select name="period">
+                        <option value="week">📅 На неделю (7 дней)</option>
+                        <option value="month">📆 На месяц (30 дней)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Количество постов в день:</label>
+                    <input type="number" name="posts_per_day" min="1" max="8" value="3">
+                </div>
+                
+                <div class="form-group">
+                    <label>Время начала публикаций:</label>
+                    <input type="time" name="start_time" value="09:00">
+                </div>
+                
+                <div class="form-group">
+                    <label>Время окончания публикаций:</label>
+                    <input type="time" name="end_time" value="22:00">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('scheduleModal')">
+                        Отмена
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Создать расписание
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="/static/js/dashboard.js"></script>
     
-    <!-- Debug script для отладки на production -->
     <script>
-        // Ждем полной загрузки DOM и инициализации
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("🔍 MediaFlux Hub Debug Info:");
-            console.log("📄 HTML loaded");
-            console.log("🎯 Start automation button:", document.getElementById('start-automation'));
-            console.log("➕ Add account button:", document.getElementById('add-account'));
-            console.log("📁 Upload content button:", document.getElementById('upload-content'));
-            console.log("📅 Create schedule button:", document.getElementById('create-schedule'));
+        console.log('🚀 Dashboard с модальными окнами загружен');
+
+        // Функции уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
             
-            // Проверяем что JavaScript файл загрузился
             setTimeout(() => {
-                if (typeof MediaFluxDashboard !== 'undefined') {
-                    console.log("✅ MediaFluxDashboard class loaded");
-                    if (window.mediaFluxDashboard) {
-                        console.log("✅ Dashboard instance initialized");
-                    } else {
-                        console.error("❌ Dashboard instance not initialized");
-                    }
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Функции модальных окон
+        function showAddAccountModal() {
+            console.log('Открытие модального окна добавления аккаунта');
+            document.getElementById('addAccountModal').classList.add('show');
+        }
+
+        function showUploadModal() {
+            console.log('Открытие модального окна загрузки');
+            document.getElementById('uploadModal').classList.add('show');
+        }
+
+        function showScheduleModal() {
+            console.log('Открытие модального окна расписания');
+            document.getElementById('scheduleModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            console.log('Закрытие модального окна:', modalId);
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Закрытие модалов по клику вне них
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        // Форма добавления аккаунта
+        document.getElementById('quickAddAccountForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Отправка формы добавления аккаунта');
+            
+            const formData = new FormData(this);
+            const accountData = Object.fromEntries(formData);
+            
+            try {
+                showNotification('⏳ Добавление аккаунта...', 'info');
+                
+                const response = await fetch('/api/accounts', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(accountData)
+                });
+                
+                const result = await response.json();
+                console.log('Результат добавления аккаунта:', result);
+                
+                if (result.success) {
+                    showNotification('✅ Аккаунт успешно добавлен!', 'success');
+                    closeModal('addAccountModal');
+                    this.reset();
+                    // Обновить статистику
+                    loadDashboardData();
                 } else {
-                    console.error("❌ MediaFluxDashboard class not loaded");
+                    showNotification('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'), 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка добавления аккаунта:', error);
+                showNotification('❌ Ошибка соединения: ' + error.message, 'error');
+            }
+        });
+
+        // Тест соединения
+        async function testQuickConnection() {
+            console.log('Тестирование соединения аккаунта');
+            
+            const form = document.getElementById('quickAddAccountForm');
+            const formData = new FormData(form);
+            const accountData = Object.fromEntries(formData);
+            
+            if (!accountData.username || !accountData.access_token) {
+                showNotification('❌ Введите username и access token для тестирования', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('⏳ Проверка соединения...', 'info');
+                
+                const response = await fetch('/api/accounts/test', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(accountData)
+                });
+                
+                const result = await response.json();
+                console.log('Результат теста соединения:', result);
+                
+                if (result.success) {
+                    showNotification(`✅ Соединение успешно! Подписчики: ${result.account_info?.followers || 'N/A'}`, 'success');
+                } else {
+                    showNotification('❌ Ошибка соединения: ' + (result.message || 'Токен недействителен'), 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка теста соединения:', error);
+                showNotification('❌ Ошибка: ' + error.message, 'error');
+            }
+        }
+
+        // Загрузка видео
+        document.getElementById('quickVideoFiles').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                uploadQuickVideos();
+            }
+        });
+
+        async function uploadQuickVideos() {
+            console.log('Загрузка видео файлов');
+            
+            const files = document.getElementById('quickVideoFiles').files;
+            const category = document.getElementById('quickVideoCategory').value;
+            
+            if (files.length === 0) {
+                showNotification('❌ Выберите файлы для загрузки', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            for (let file of files) {
+                if (file.type.startsWith('video/')) {
+                    formData.append('videos', file);
+                } else {
+                    showNotification(`❌ Файл ${file.name} не является видео`, 'error');
+                    return;
+                }
+            }
+            formData.append('category', category);
+            
+            try {
+                showNotification(`⏳ Загрузка ${files.length} видео...`, 'info');
+                
+                const response = await fetch('/api/content/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                console.log('Результат загрузки видео:', result);
+                
+                if (result.success) {
+                    showNotification(`✅ Успешно загружено ${files.length} видео в категорию "${category}"!`, 'success');
+                    closeModal('uploadModal');
+                    // Сбросить input
+                    document.getElementById('quickVideoFiles').value = '';
+                } else {
+                    showNotification('❌ Ошибка загрузки: ' + (result.message || 'Неизвестная ошибка'), 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки видео:', error);
+                showNotification('❌ Ошибка: ' + error.message, 'error');
+            }
+        }
+
+        // Создание расписания
+        document.getElementById('quickScheduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Создание расписания');
+            
+            const formData = new FormData(this);
+            const scheduleData = Object.fromEntries(formData);
+            
+            try {
+                showNotification('⏳ Создание расписания...', 'info');
+                
+                const response = await fetch('/api/tasks/generate-schedule', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(scheduleData)
+                });
+                
+                const result = await response.json();
+                console.log('Результат создания расписания:', result);
+                
+                if (result.success) {
+                    showNotification(`✅ Расписание создано! Создано задач: ${result.tasks_created}`, 'success');
+                    closeModal('scheduleModal');
+                    this.reset();
+                } else {
+                    showNotification('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'), 'error');
+                }
+            } catch (error) {
+                console.error('Ошибка создания расписания:', error);
+                showNotification('❌ Ошибка: ' + error.message, 'error');
+            }
+        });
+
+        // Загрузка данных дашборда
+        async function loadDashboardData() {
+            console.log('Загрузка данных дашборда');
+            
+            try {
+                // Загрузка статистики
+                const statsResponse = await fetch('/api/dashboard/stats');
+                const stats = await statsResponse.json();
+                
+                // Обновление счетчиков
+                if (stats) {
+                    document.getElementById('activeAccounts').textContent = stats.active_accounts || 0;
+                    document.getElementById('postsToday').textContent = stats.posts_today || 0;
+                    document.getElementById('scheduledPosts').textContent = stats.posts_scheduled || 0;
+                    document.getElementById('totalViews').textContent = (stats.total_views || 0).toLocaleString();
+                    document.getElementById('accountsCount').textContent = stats.total_accounts || 0;
                 }
                 
-                // Проверяем API endpoints
-                fetch('/health')
-                    .then(response => response.json())
-                    .then(data => console.log("✅ Health check API:", data))
-                    .catch(error => console.error("❌ Health check API failed:", error));
-                    
-                fetch('/debug')
-                    .then(response => response.json())
-                    .then(data => console.log("🔍 Debug info:", data))
-                    .catch(error => console.error("❌ Debug API failed:", error));
-            }, 1000); // Ждем 1 секунду для инициализации
+                console.log('Статистика обновлена:', stats);
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+
+        // Загрузка активности
+        async function loadRecentActivity() {
+            console.log('Загрузка последней активности');
+            
+            try {
+                const response = await fetch('/api/dashboard/recent-activity');
+                const activities = await response.json();
+                
+                const activityFeed = document.getElementById('activityFeed');
+                
+                if (activities && activities.length > 0) {
+                    activityFeed.innerHTML = activities.map(activity => `
+                        <div class="activity-item">
+                            <div class="activity-icon">${activity.icon || '📝'}</div>
+                            <div class="activity-content">
+                                <div class="activity-title">${activity.action}</div>
+                                <div class="activity-time">${activity.time}</div>
+                            </div>
+                            <div class="activity-status status-${activity.type}">${getStatusIcon(activity.type)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    activityFeed.innerHTML = '<div class="activity-item"><div class="activity-content"><div class="activity-title">Нет активности</div></div></div>';
+                }
+                
+                console.log('Активность обновлена:', activities);
+            } catch (error) {
+                console.error('Ошибка загрузки активности:', error);
+            }
+        }
+
+        function getStatusIcon(type) {
+            const icons = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️',
+                'scheduled': '⏰'
+            };
+            return icons[type] || 'ℹ️';
+        }
+
+        // Автозагрузка данных при открытии страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Dashboard инициализирован, загрузка данных...');
+            loadDashboardData();
+            loadRecentActivity();
+            
+            // Автообновление каждые 30 секунд
+            setInterval(() => {
+                loadDashboardData();
+                loadRecentActivity();
+            }, 30000);
+        });
+
+        // Кнопка запуска автоматизации
+        document.getElementById('start-automation').addEventListener('click', function() {
+            console.log('Запуск автоматизации');
+            showNotification('🚀 Автоматизация запущена!', 'success');
         });
     </script>
 </body>
