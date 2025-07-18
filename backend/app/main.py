@@ -64,15 +64,15 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Импорт API роутеров
 try:
-    from app.api import dashboard, accounts, content, tasks, system, proxies
+    from app.api import dashboard, accounts, content, tasks
     API_AVAILABLE = True
-except ImportError:
-    logger.warning("API modules not available, running in limited mode")
+except ImportError as e:
+    logger.warning(f"API modules not available, running in limited mode: {e}")
     API_AVAILABLE = False
 
 # Главная страница с веб-интерфейсом
 @app.get("/", response_class=HTMLResponse)
-async def dashboard(request: Request):
+async def dashboard_page(request: Request):
     """Главная страница MediaFlux Hub Dashboard"""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
@@ -91,30 +91,16 @@ async def schedule_page(request: Request):
     """Страница планирования"""
     return templates.TemplateResponse("schedule.html", {"request": request})
 
-# Добавить routes для всех страниц
-@app.get("/accounts", response_class=HTMLResponse)
-async def accounts_page(request: Request):
-    """Страница управления аккаунтами"""
-    return templates.TemplateResponse("accounts.html", {"request": request})
-
-@app.get("/content", response_class=HTMLResponse)  
-async def content_page(request: Request):
-    """Страница управления контентом"""
-    return templates.TemplateResponse("content.html", {"request": request})
-
-@app.get("/schedule", response_class=HTMLResponse)
-async def schedule_page(request: Request):
-    """Страница планирования"""
-    return templates.TemplateResponse("schedule.html", {"request": request})
-
 # Подключение API роутеров
 if API_AVAILABLE:
+    # Подключаем все API роутеры
     app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
     app.include_router(accounts.router, prefix="/api/accounts", tags=["Accounts"])
     app.include_router(content.router, prefix="/api/content", tags=["Content"])
     app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
-    app.include_router(system.router, prefix="/api/system", tags=["System"])
-    app.include_router(proxies.router, prefix="/api/proxies", tags=["Proxies"])
+    logger.info("✅ All API endpoints loaded successfully")
+else:
+    logger.warning("⚠️ Running without API endpoints")
 
 # API endpoint для получения данных
 @app.get("/api")

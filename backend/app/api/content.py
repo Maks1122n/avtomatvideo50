@@ -3,109 +3,70 @@ MediaFlux Hub - Content Management API
 Управление видео контентом
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import List, Optional
+from fastapi import APIRouter, UploadFile, File, Form
+from typing import List
 import os
-from datetime import datetime
-import uuid
 
 router = APIRouter()
 
 @router.get("/folders")
 async def get_content_folders():
-    """Получить список папок с контентом"""
+    """Список папок с контентом"""
     folders = [
         {
-            "name": "motivation",
-            "display_name": "Мотивация",
-            "video_count": 23,
-            "total_size": "450 MB",
-            "last_upload": "2 часа назад",
-            "status": "active"
+            "id": "motivation",
+            "name": "Мотивация",
+            "total_videos": 45,
+            "used_videos": 23,
+            "size": "2.1 GB",
+            "last_updated": "2 часа назад"
         },
         {
-            "name": "business", 
-            "display_name": "Бизнес",
-            "video_count": 18,
-            "total_size": "320 MB",
-            "last_upload": "5 часов назад",
-            "status": "active"
+            "id": "lifestyle", 
+            "name": "Лайфстайл",
+            "total_videos": 38,
+            "used_videos": 15,
+            "size": "1.8 GB",
+            "last_updated": "1 день назад"
         },
         {
-            "name": "lifestyle",
-            "display_name": "Лайфстайл", 
-            "video_count": 31,
-            "total_size": "580 MB",
-            "last_upload": "1 час назад",
-            "status": "active"
+            "id": "business",
+            "name": "Бизнес", 
+            "total_videos": 29,
+            "used_videos": 12,
+            "size": "1.3 GB",
+            "last_updated": "3 часа назад"
         },
         {
-            "name": "entertainment",
-            "display_name": "Развлечения",
-            "video_count": 15,
-            "total_size": "280 MB", 
-            "last_upload": "6 часов назад",
-            "status": "active"
+            "id": "entertainment",
+            "name": "Развлечения",
+            "total_videos": 52,
+            "used_videos": 31,
+            "size": "2.7 GB", 
+            "last_updated": "30 минут назад"
         }
     ]
-    
-    return {
-        "folders": folders,
-        "total_videos": sum(f["video_count"] for f in folders),
-        "total_size": "1.63 GB"
-    }
-
-@router.get("/videos")
-async def get_videos(folder: Optional[str] = None):
-    """Получить список видео файлов"""
-    videos = [
-        {
-            "id": "video_001",
-            "filename": "success_mindset_tips.mp4",
-            "folder": "motivation",
-            "size": "15.2 MB",
-            "duration": "0:45",
-            "uploaded": "2024-01-15 14:30",
-            "used_count": 5,
-            "last_used": "1 час назад",
-            "status": "available"
-        },
-        {
-            "id": "video_002", 
-            "filename": "entrepreneurship_basics.mp4",
-            "folder": "business",
-            "size": "22.8 MB",
-            "duration": "1:20",
-            "uploaded": "2024-01-15 12:15",
-            "used_count": 3,
-            "last_used": "3 часа назад",
-            "status": "available"
-        },
-        {
-            "id": "video_003",
-            "filename": "morning_routine.mp4", 
-            "folder": "lifestyle",
-            "size": "18.5 MB",
-            "duration": "1:05",
-            "uploaded": "2024-01-15 09:45",
-            "used_count": 7,
-            "last_used": "30 минут назад",
-            "status": "available"
-        }
-    ]
-    
-    if folder:
-        videos = [v for v in videos if v["folder"] == folder]
-    
-    return videos
+    return folders
 
 @router.post("/upload")
-async def upload_video(video_data: dict):
-    """Загрузить новое видео"""
-    # Симуляция загрузки
+async def upload_videos(
+    videos: List[UploadFile] = File(...),
+    category: str = Form(...)
+):
+    """Загрузка видео файлов"""
+    uploaded_files = []
+    
+    for video in videos:
+        # Симуляция сохранения файла
+        filename = f"{category}_{video.filename}"
+        uploaded_files.append({
+            "filename": filename,
+            "size": len(await video.read()),
+            "category": category
+        })
+    
     return {
-        "message": "Видео успешно загружено",
-        "video_id": str(uuid.uuid4()),
-        "filename": video_data.get("filename", "new_video.mp4"),
-        "status": "processing"
+        "success": True,
+        "message": f"Загружено {len(videos)} видео",
+        "files": uploaded_files
     } 
