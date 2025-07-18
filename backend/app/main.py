@@ -54,8 +54,15 @@ if API_AVAILABLE:
     app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
     logger.info("✅ All API routers connected")
 
-# Главная страница
+# Главная страница - перенаправление на контент
 @app.get("/", response_class=HTMLResponse)
+async def dashboard_redirect():
+    """Перенаправление на страницу контента как главную"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/content", status_code=302)
+
+# Отдельный роут для красивого дашборда
+@app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
