@@ -5,9 +5,10 @@ Main FastAPI Application
 import os
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 # Настройка логирования
@@ -55,20 +56,28 @@ async def health_check():
         "version": "1.0.0"
     }
 
-# Главная страница
-@app.get("/")
-async def read_root():
-    """Главная страница"""
+# Настройка шаблонов
+templates = Jinja2Templates(directory="templates")
+
+# Статические файлы
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Главная страница с веб-интерфейсом
+@app.get("/", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    """Главная страница MediaFlux Hub Dashboard"""
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+# API endpoint для получения данных
+@app.get("/api")
+async def api_root():
+    """API информация"""
     return {
         "message": "MediaFlux Hub API", 
         "version": "1.0.0",
         "docs": "/docs",
         "health": "/health"
     }
-
-# Статические файлы
-if os.path.exists("frontend"):
-    app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 if __name__ == "__main__":
     import uvicorn

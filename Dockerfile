@@ -19,10 +19,11 @@ COPY backend/ ./
 
 # Создание необходимых директорий
 RUN mkdir -p content/motivation content/lifestyle content/business content/entertainment
-RUN mkdir -p logs proxies uploads frontend
+RUN mkdir -p logs proxies uploads templates static
 
-# Копирование frontend и content
-COPY frontend/ ./frontend/
+# Копирование веб-интерфейса
+COPY templates/ ./templates/
+COPY static/ ./static/
 COPY content/ ./content/
 
 # Установка прав доступа
