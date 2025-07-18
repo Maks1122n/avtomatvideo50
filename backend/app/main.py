@@ -170,6 +170,22 @@ if API_AVAILABLE:
 else:
     logger.warning("⚠️ Running without API endpoints")
 
+# Страницы навигации
+@app.get("/analytics", response_class=HTMLResponse)
+async def analytics_page(request: Request):
+    """Страница аналитики"""
+    return templates.TemplateResponse("analytics.html", {"request": request})
+
+@app.get("/proxies", response_class=HTMLResponse)
+async def proxies_page(request: Request):
+    """Страница управления прокси"""
+    return templates.TemplateResponse("proxies.html", {"request": request})
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Страница настроек"""
+    return templates.TemplateResponse("settings.html", {"request": request})
+
 # API endpoint для получения данных
 @app.get("/api")
 async def api_root():

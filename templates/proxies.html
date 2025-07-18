@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прокси - MediaFlux Hub</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-video"></i>
+                <span>MediaFlux Hub</span>
+            </div>
+            
+            <ul class="menu">
+                <li class="menu-item" data-page="dashboard">
+                    <a href="/">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="accounts">
+                    <a href="/accounts">
+                        <i class="fas fa-users"></i>
+                        <span>Аккаунты</span>
+                        <span class="badge">3</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="content">
+                    <a href="/content">
+                        <i class="fas fa-folder"></i>
+                        <span>Контент</span>
+                        <span class="badge">156</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="scheduler">
+                    <a href="/schedule">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Планировщик</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="analytics">
+                    <a href="/analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Аналитика</span>
+                    </a>
+                </li>
+                <li class="menu-item active" data-page="proxies">
+                    <a href="/proxies">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Прокси</span>
+                        <span class="status-indicator"></span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="settings">
+                    <a href="/settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Настройки</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Управление прокси</h1>
+                    <span class="breadcrumb">Главная / Управление прокси</span>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" id="add-proxy">
+                        <i class="fas fa-plus"></i>
+                        Добавить прокси
+                    </button>
+                    <div class="user-profile">
+                        <i class="fas fa-user"></i>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Proxies Content -->
+            <div class="content" id="proxies-content">
+                <!-- Proxy Stats -->
+                <div class="proxy-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-proxies">12</h3>
+                            <p>Всего прокси</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon online">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="active-proxies">8</h3>
+                            <p>Активных</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="slow-proxies">2</h3>
+                            <p>Медленных</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon offline">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="offline-proxies">2</h3>
+                            <p>Не работают</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proxy Controls -->
+                <div class="proxy-controls">
+                    <div class="controls-left">
+                        <button class="btn btn-secondary" id="test-all-proxies">
+                            <i class="fas fa-sync-alt"></i>
+                            Тестировать все
+                        </button>
+                        <button class="btn btn-secondary" id="import-proxies">
+                            <i class="fas fa-upload"></i>
+                            Импорт списка
+                        </button>
+                        <button class="btn btn-danger" id="clear-offline">
+                            <i class="fas fa-trash"></i>
+                            Удалить неработающие
+                        </button>
+                    </div>
+                    
+                    <div class="controls-right">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="proxy-search" placeholder="Поиск прокси...">
+                        </div>
+                        <select id="proxy-filter" class="form-control">
+                            <option value="all">Все прокси</option>
+                            <option value="active">Активные</option>
+                            <option value="slow">Медленные</option>
+                            <option value="offline">Не работают</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Proxy List -->
+                <div class="proxy-list-container">
+                    <div class="proxy-list-header">
+                        <h3>Список прокси-серверов</h3>
+                        <span class="proxy-count">Показано: <span id="shown-count">12</span> из <span id="total-count">12</span></span>
+                    </div>
+                    
+                    <div class="proxy-table-container">
+                        <table class="proxy-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="select-all-proxies">
+                                    </th>
+                                    <th>Адрес</th>
+                                    <th>Порт</th>
+                                    <th>Тип</th>
+                                    <th>Страна</th>
+                                    <th>Скорость</th>
+                                    <th>Статус</th>
+                                    <th>Последняя проверка</th>
+                                    <th>Использований</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="proxy-list">
+                                <!-- Данные загружаются через JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Proxy Modal -->
+    <div class="modal" id="add-proxy-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить прокси-сервер</h3>
+                <button class="modal-close" id="close-add-proxy">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-proxy-form">
+                    <div class="form-group">
+                        <label for="proxy-host">IP адрес или домен</label>
+                        <input type="text" id="proxy-host" class="form-control" placeholder="192.168.1.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="proxy-port">Порт</label>
+                        <input type="number" id="proxy-port" class="form-control" placeholder="8080" min="1" max="65535" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="proxy-type">Тип прокси</label>
+                        <select id="proxy-type" class="form-control" required>
+                            <option value="">Выберите тип</option>
+                            <option value="http">HTTP</option>
+                            <option value="https">HTTPS</option>
+                            <option value="socks4">SOCKS4</option>
+                            <option value="socks5">SOCKS5</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="proxy-username">Логин (опционально)</label>
+                            <input type="text" id="proxy-username" class="form-control" placeholder="username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="proxy-password">Пароль (опционально)</label>
+                            <input type="password" id="proxy-password" class="form-control" placeholder="password">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="proxy-country">Страна</label>
+                        <select id="proxy-country" class="form-control">
+                            <option value="">Автоопределение</option>
+                            <option value="US">США</option>
+                            <option value="RU">Россия</option>
+                            <option value="DE">Германия</option>
+                            <option value="NL">Нидерланды</option>
+                            <option value="UK">Великобритания</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="test-on-add">
+                            Протестировать прокси при добавлении
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-add-proxy">Отмена</button>
+                <button type="submit" form="add-proxy-form" class="btn btn-primary">Добавить прокси</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Proxies Modal -->
+    <div class="modal" id="import-proxies-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Импорт списка прокси</h3>
+                <button class="modal-close" id="close-import-proxies">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="import-info">
+                    <p>Поддерживаемые форматы:</p>
+                    <ul>
+                        <li><code>host:port</code></li>
+                        <li><code>host:port:username:password</code></li>
+                        <li><code>protocol://host:port</code></li>
+                        <li><code>protocol://username:password@host:port</code></li>
+                    </ul>
+                </div>
+                
+                <div class="form-group">
+                    <label for="proxy-list-input">Список прокси (по одному на строку)</label>
+                    <textarea id="proxy-list-input" class="form-control" rows="10" placeholder="192.168.1.1:8080
+192.168.1.2:3128:user:pass
+http://192.168.1.3:8080
+socks5://user:pass@192.168.1.4:1080"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="test-imported">
+                        Автоматически тестировать импортированные прокси
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-import">Отмена</button>
+                <button type="button" class="btn btn-primary" id="import-proxy-list">Импортировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProxyList();
+            setupEventListeners();
+        });
+
+        function loadProxyList() {
+            const tbody = document.getElementById('proxy-list');
+            const sampleProxies = [
+                {
+                    id: 1,
+                    host: '192.168.1.100',
+                    port: 8080,
+                    type: 'HTTP',
+                    country: 'US',
+                    speed: 245,
+                    status: 'active',
+                    lastCheck: '2024-01-15 14:30',
+                    usage: 15
+                },
+                {
+                    id: 2,
+                    host: '10.0.0.50',
+                    port: 3128,
+                    type: 'HTTPS',
+                    country: 'DE',
+                    speed: 189,
+                    status: 'active',
+                    lastCheck: '2024-01-15 14:28',
+                    usage: 8
+                },
+                {
+                    id: 3,
+                    host: '172.16.0.25',
+                    port: 1080,
+                    type: 'SOCKS5',
+                    country: 'NL',
+                    speed: 567,
+                    status: 'slow',
+                    lastCheck: '2024-01-15 14:25',
+                    usage: 3
+                },
+                {
+                    id: 4,
+                    host: '203.0.113.10',
+                    port: 8888,
+                    type: 'HTTP',
+                    country: 'RU',
+                    speed: 0,
+                    status: 'offline',
+                    lastCheck: '2024-01-15 14:20',
+                    usage: 0
+                }
+            ];
+
+            tbody.innerHTML = sampleProxies.map(proxy => `
+                <tr data-proxy-id="${proxy.id}" class="proxy-row ${proxy.status}">
+                    <td>
+                        <input type="checkbox" class="proxy-checkbox" value="${proxy.id}">
+                    </td>
+                    <td>${proxy.host}</td>
+                    <td>${proxy.port}</td>
+                    <td><span class="proxy-type-badge ${proxy.type.toLowerCase()}">${proxy.type}</span></td>
+                    <td>
+                        <span class="country-flag ${proxy.country.toLowerCase()}"></span>
+                        ${proxy.country}
+                    </td>
+                    <td>
+                        ${proxy.speed > 0 ? `${proxy.speed}ms` : 'N/A'}
+                        ${proxy.status === 'slow' ? '<i class="fas fa-exclamation-triangle text-warning"></i>' : ''}
+                    </td>
+                    <td>
+                        <span class="status-badge ${proxy.status}">
+                            ${getStatusText(proxy.status)}
+                        </span>
+                    </td>
+                    <td>${proxy.lastCheck}</td>
+                    <td>${proxy.usage}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="testProxy(${proxy.id})" title="Тестировать">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="btn-icon" onclick="editProxy(${proxy.id})" title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="deleteProxy(${proxy.id})" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                active: 'Активен',
+                slow: 'Медленный',
+                offline: 'Не работает'
+            };
+            return statusMap[status] || status;
+        }
+
+        function setupEventListeners() {
+            // Add Proxy Modal
+            document.getElementById('add-proxy').addEventListener('click', () => {
+                document.getElementById('add-proxy-modal').style.display = 'flex';
+            });
+
+            document.getElementById('close-add-proxy').addEventListener('click', () => {
+                document.getElementById('add-proxy-modal').style.display = 'none';
+            });
+
+            document.getElementById('cancel-add-proxy').addEventListener('click', () => {
+                document.getElementById('add-proxy-modal').style.display = 'none';
+            });
+
+            // Import Proxies Modal
+            document.getElementById('import-proxies').addEventListener('click', () => {
+                document.getElementById('import-proxies-modal').style.display = 'flex';
+            });
+
+            document.getElementById('close-import-proxies').addEventListener('click', () => {
+                document.getElementById('import-proxies-modal').style.display = 'none';
+            });
+
+            document.getElementById('cancel-import').addEventListener('click', () => {
+                document.getElementById('import-proxies-modal').style.display = 'none';
+            });
+
+            // Test All Proxies
+            document.getElementById('test-all-proxies').addEventListener('click', () => {
+                testAllProxies();
+            });
+
+            // Clear Offline
+            document.getElementById('clear-offline').addEventListener('click', () => {
+                if (confirm('Удалить все неработающие прокси?')) {
+                    clearOfflineProxies();
+                }
+            });
+
+            // Search and Filter
+            document.getElementById('proxy-search').addEventListener('input', filterProxies);
+            document.getElementById('proxy-filter').addEventListener('change', filterProxies);
+
+            // Select All
+            document.getElementById('select-all-proxies').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.proxy-checkbox');
+                checkboxes.forEach(cb => cb.checked = this.checked);
+            });
+        }
+
+        function testProxy(id) {
+            const row = document.querySelector(`[data-proxy-id="${id}"]`);
+            const statusCell = row.querySelector('.status-badge');
+            const speedCell = row.cells[5];
+            
+            statusCell.textContent = 'Тестирование...';
+            statusCell.className = 'status-badge testing';
+            
+            // Имитация тестирования
+            setTimeout(() => {
+                const isOnline = Math.random() > 0.3;
+                const speed = isOnline ? Math.floor(Math.random() * 500) + 100 : 0;
+                
+                if (isOnline) {
+                    const isSlow = speed > 400;
+                    statusCell.textContent = isSlow ? 'Медленный' : 'Активен';
+                    statusCell.className = `status-badge ${isSlow ? 'slow' : 'active'}`;
+                    speedCell.innerHTML = `${speed}ms ${isSlow ? '<i class="fas fa-exclamation-triangle text-warning"></i>' : ''}`;
+                } else {
+                    statusCell.textContent = 'Не работает';
+                    statusCell.className = 'status-badge offline';
+                    speedCell.textContent = 'N/A';
+                }
+            }, 2000);
+        }
+
+        function editProxy(id) {
+            console.log('Редактирование прокси:', id);
+        }
+
+        function deleteProxy(id) {
+            if (confirm('Удалить этот прокси-сервер?')) {
+                const row = document.querySelector(`[data-proxy-id="${id}"]`);
+                row.remove();
+                updateStats();
+            }
+        }
+
+        function testAllProxies() {
+            const rows = document.querySelectorAll('.proxy-row');
+            rows.forEach((row, index) => {
+                setTimeout(() => {
+                    const id = row.dataset.proxyId;
+                    testProxy(id);
+                }, index * 500);
+            });
+        }
+
+        function clearOfflineProxies() {
+            const offlineRows = document.querySelectorAll('.proxy-row.offline');
+            offlineRows.forEach(row => row.remove());
+            updateStats();
+        }
+
+        function filterProxies() {
+            const search = document.getElementById('proxy-search').value.toLowerCase();
+            const filter = document.getElementById('proxy-filter').value;
+            const rows = document.querySelectorAll('.proxy-row');
+            
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const host = row.cells[1].textContent.toLowerCase();
+                const status = row.classList.contains('active') ? 'active' : 
+                              row.classList.contains('slow') ? 'slow' : 'offline';
+                
+                const matchesSearch = host.includes(search);
+                const matchesFilter = filter === 'all' || status === filter;
+                
+                if (matchesSearch && matchesFilter) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('shown-count').textContent = visibleCount;
+        }
+
+        function updateStats() {
+            const rows = document.querySelectorAll('.proxy-row');
+            const total = rows.length;
+            const active = document.querySelectorAll('.proxy-row.active').length;
+            const slow = document.querySelectorAll('.proxy-row.slow').length;
+            const offline = document.querySelectorAll('.proxy-row.offline').length;
+            
+            document.getElementById('total-proxies').textContent = total;
+            document.getElementById('active-proxies').textContent = active;
+            document.getElementById('slow-proxies').textContent = slow;
+            document.getElementById('offline-proxies').textContent = offline;
+            document.getElementById('total-count').textContent = total;
+        }
+    </script>
+</body>
+</html> 

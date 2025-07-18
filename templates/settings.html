@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки - MediaFlux Hub</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-video"></i>
+                <span>MediaFlux Hub</span>
+            </div>
+            
+            <ul class="menu">
+                <li class="menu-item" data-page="dashboard">
+                    <a href="/">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="accounts">
+                    <a href="/accounts">
+                        <i class="fas fa-users"></i>
+                        <span>Аккаунты</span>
+                        <span class="badge">3</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="content">
+                    <a href="/content">
+                        <i class="fas fa-folder"></i>
+                        <span>Контент</span>
+                        <span class="badge">156</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="scheduler">
+                    <a href="/schedule">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Планировщик</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="analytics">
+                    <a href="/analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Аналитика</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="proxies">
+                    <a href="/proxies">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Прокси</span>
+                        <span class="status-indicator"></span>
+                    </a>
+                </li>
+                <li class="menu-item active" data-page="settings">
+                    <a href="/settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Настройки</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Настройки системы</h1>
+                    <span class="breadcrumb">Главная / Настройки системы</span>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" id="save-settings">
+                        <i class="fas fa-save"></i>
+                        Сохранить изменения
+                    </button>
+                    <div class="user-profile">
+                        <i class="fas fa-user"></i>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Settings Content -->
+            <div class="content" id="settings-content">
+                <div class="settings-container">
+                    <!-- General Settings -->
+                    <div class="settings-section">
+                        <h3>Общие настройки</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label for="app-name">Название приложения</label>
+                                <input type="text" id="app-name" value="MediaFlux Hub" class="form-control">
+                                <small>Отображается в заголовке и логотипе</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="timezone">Часовой пояс</label>
+                                <select id="timezone" class="form-control">
+                                    <option value="Europe/Moscow" selected>Москва (UTC+3)</option>
+                                    <option value="Europe/Kiev">Киев (UTC+2)</option>
+                                    <option value="Asia/Almaty">Алматы (UTC+6)</option>
+                                    <option value="UTC">UTC (GMT+0)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="language">Язык интерфейса</label>
+                                <select id="language" class="form-control">
+                                    <option value="ru" selected>Русский</option>
+                                    <option value="en">English</option>
+                                    <option value="uk">Українська</option>
+                                </select>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="theme">Тема оформления</label>
+                                <select id="theme" class="form-control">
+                                    <option value="dark" selected>Темная</option>
+                                    <option value="light">Светлая</option>
+                                    <option value="auto">Автоматическая</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Automation Settings -->
+                    <div class="settings-section">
+                        <h3>Настройки автоматизации</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label for="max-posts-per-day">Максимум постов в день на аккаунт</label>
+                                <input type="number" id="max-posts-per-day" value="5" min="1" max="20" class="form-control">
+                                <small>Рекомендуется не более 5-7 постов</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="min-delay">Минимальная задержка между постами (минуты)</label>
+                                <input type="number" id="min-delay" value="30" min="10" max="480" class="form-control">
+                                <small>Минимум 30 минут для безопасности</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="auto-rotation">Автоматическая ротация аккаунтов</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="auto-rotation" checked>
+                                    <label for="auto-rotation"></label>
+                                </div>
+                                <small>Автоматически переключает между аккаунтами</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="smart-timing">Умное планирование времени</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="smart-timing" checked>
+                                    <label for="smart-timing"></label>
+                                </div>
+                                <small>Публикует в оптимальное время для аудитории</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="settings-section">
+                        <h3>Настройки безопасности</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label for="proxy-enabled">Использовать прокси-серверы</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="proxy-enabled" checked>
+                                    <label for="proxy-enabled"></label>
+                                </div>
+                                <small>Обязательно для безопасной работы</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="user-agent-rotation">Ротация User-Agent</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="user-agent-rotation" checked>
+                                    <label for="user-agent-rotation"></label>
+                                </div>
+                                <small>Изменяет браузерные заголовки</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="captcha-solving">Автоматическое решение капчи</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="captcha-solving">
+                                    <label for="captcha-solving"></label>
+                                </div>
+                                <small>Требует подключение сервиса решения капчи</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="backup-enabled">Автоматические резервные копии</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="backup-enabled" checked>
+                                    <label for="backup-enabled"></label>
+                                </div>
+                                <small>Создает копии каждые 24 часа</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Settings -->
+                    <div class="settings-section">
+                        <h3>Настройки API</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label for="api-enabled">Включить API</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="api-enabled" checked>
+                                    <label for="api-enabled"></label>
+                                </div>
+                                <small>Позволяет внешним приложениям подключаться</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="api-key">API ключ</label>
+                                <div class="input-group">
+                                    <input type="password" id="api-key" value="mk_1234567890abcdef" class="form-control" readonly>
+                                    <button type="button" class="btn btn-secondary" id="regenerate-api-key">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Обновить
+                                    </button>
+                                </div>
+                                <small>Не передавайте этот ключ третьим лицам</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="rate-limit">Ограничение запросов в минуту</label>
+                                <input type="number" id="rate-limit" value="60" min="10" max="1000" class="form-control">
+                                <small>Максимум запросов к API в минуту</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Settings -->
+                    <div class="settings-section">
+                        <h3>Уведомления</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label for="email-notifications">Email уведомления</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="email-notifications" checked>
+                                    <label for="email-notifications"></label>
+                                </div>
+                                <small>Получать уведомления о важных событиях</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="telegram-notifications">Telegram уведомления</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="telegram-notifications">
+                                    <label for="telegram-notifications"></label>
+                                </div>
+                                <small>Уведомления через Telegram бота</small>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="notification-email">Email для уведомлений</label>
+                                <input type="email" id="notification-email" value="admin@example.com" class="form-control">
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="telegram-chat-id">Telegram Chat ID</label>
+                                <input type="text" id="telegram-chat-id" placeholder="123456789" class="form-control">
+                                <small>ID чата для получения уведомлений</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Info -->
+                    <div class="settings-section">
+                        <h3>Информация о системе</h3>
+                        <div class="system-info-grid">
+                            <div class="info-card">
+                                <h4>Версия приложения</h4>
+                                <p>1.0.0</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>Время работы</h4>
+                                <p id="uptime">2 дня 14 часов</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>Использование памяти</h4>
+                                <p id="memory-usage">45%</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>Использование диска</h4>
+                                <p id="disk-usage">28%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Обработчик сохранения настроек
+            document.getElementById('save-settings').addEventListener('click', function() {
+                const settings = {
+                    appName: document.getElementById('app-name').value,
+                    timezone: document.getElementById('timezone').value,
+                    language: document.getElementById('language').value,
+                    theme: document.getElementById('theme').value,
+                    maxPostsPerDay: document.getElementById('max-posts-per-day').value,
+                    minDelay: document.getElementById('min-delay').value,
+                    autoRotation: document.getElementById('auto-rotation').checked,
+                    smartTiming: document.getElementById('smart-timing').checked,
+                    proxyEnabled: document.getElementById('proxy-enabled').checked,
+                    userAgentRotation: document.getElementById('user-agent-rotation').checked,
+                    captchaSolving: document.getElementById('captcha-solving').checked,
+                    backupEnabled: document.getElementById('backup-enabled').checked,
+                    apiEnabled: document.getElementById('api-enabled').checked,
+                    rateLimit: document.getElementById('rate-limit').value,
+                    emailNotifications: document.getElementById('email-notifications').checked,
+                    telegramNotifications: document.getElementById('telegram-notifications').checked,
+                    notificationEmail: document.getElementById('notification-email').value,
+                    telegramChatId: document.getElementById('telegram-chat-id').value
+                };
+
+                console.log('Сохранение настроек:', settings);
+                
+                // Имитация сохранения
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i> Сохранено';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-save"></i> Сохранить изменения';
+                        this.disabled = false;
+                    }, 2000);
+                }, 1000);
+            });
+
+            // Обработчик обновления API ключа
+            document.getElementById('regenerate-api-key').addEventListener('click', function() {
+                if (confirm('Вы уверены, что хотите обновить API ключ? Старый ключ перестанет работать.')) {
+                    const newKey = 'mk_' + Math.random().toString(36).substring(2, 18);
+                    document.getElementById('api-key').value = newKey;
+                    
+                    this.innerHTML = '<i class="fas fa-check"></i> Обновлен';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-sync-alt"></i> Обновить';
+                    }, 2000);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
