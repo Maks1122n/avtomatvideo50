@@ -491,7 +491,24 @@ class MediaFluxDashboard {
 
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.mediaFluxDashboard = new MediaFluxDashboard();
+    // Add mobile menu button if on mobile
+    if (window.innerWidth <= 768) {
+        const header = document.querySelector('.header-left');
+        const menuButton = document.createElement('button');
+        menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+        menuButton.className = 'mobile-menu-btn';
+        menuButton.onclick = toggleMobileMenu;
+        header.insertBefore(menuButton, header.firstChild);
+    }
+
+    // Initialize MediaFlux Dashboard
+    console.log('📱 Initializing MediaFlux Dashboard...');
+    try {
+        window.mediaFluxDashboard = new MediaFluxDashboard();
+        console.log('✅ MediaFlux Dashboard initialized successfully');
+    } catch (error) {
+        console.error('❌ Failed to initialize MediaFlux Dashboard:', error);
+    }
 });
 
 // Cleanup on page unload
@@ -505,14 +522,4 @@ window.addEventListener('beforeunload', () => {
 function toggleMobileMenu() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.classList.toggle('open');
-}
-
-// Add mobile menu button if on mobile
-if (window.innerWidth <= 768) {
-    const header = document.querySelector('.header-left');
-    const menuButton = document.createElement('button');
-    menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-    menuButton.className = 'mobile-menu-btn';
-    menuButton.onclick = toggleMobileMenu;
-    header.insertBefore(menuButton, header.firstChild);
 } 

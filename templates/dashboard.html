@@ -262,30 +262,40 @@
     
     <!-- Debug script для отладки на production -->
     <script>
-        console.log("🔍 MediaFlux Hub Debug Info:");
-        console.log("📄 HTML loaded");
-        console.log("🎯 Start automation button:", document.getElementById('start-automation'));
-        console.log("➕ Add account button:", document.getElementById('add-account'));
-        console.log("📁 Upload content button:", document.getElementById('upload-content'));
-        console.log("📅 Create schedule button:", document.getElementById('create-schedule'));
-        
-        // Проверяем что JavaScript файл загрузился
-        if (typeof MediaFluxDashboard !== 'undefined') {
-            console.log("✅ Dashboard JavaScript loaded successfully");
-        } else {
-            console.error("❌ Dashboard JavaScript failed to load");
-        }
-        
-        // Проверяем API endpoints
-        fetch('/health')
-            .then(response => response.json())
-            .then(data => console.log("✅ Health check API:", data))
-            .catch(error => console.error("❌ Health check API failed:", error));
+        // Ждем полной загрузки DOM и инициализации
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🔍 MediaFlux Hub Debug Info:");
+            console.log("📄 HTML loaded");
+            console.log("🎯 Start automation button:", document.getElementById('start-automation'));
+            console.log("➕ Add account button:", document.getElementById('add-account'));
+            console.log("📁 Upload content button:", document.getElementById('upload-content'));
+            console.log("📅 Create schedule button:", document.getElementById('create-schedule'));
             
-        fetch('/debug')
-            .then(response => response.json())
-            .then(data => console.log("🔍 Debug info:", data))
-            .catch(error => console.error("❌ Debug API failed:", error));
+            // Проверяем что JavaScript файл загрузился
+            setTimeout(() => {
+                if (typeof MediaFluxDashboard !== 'undefined') {
+                    console.log("✅ MediaFluxDashboard class loaded");
+                    if (window.mediaFluxDashboard) {
+                        console.log("✅ Dashboard instance initialized");
+                    } else {
+                        console.error("❌ Dashboard instance not initialized");
+                    }
+                } else {
+                    console.error("❌ MediaFluxDashboard class not loaded");
+                }
+                
+                // Проверяем API endpoints
+                fetch('/health')
+                    .then(response => response.json())
+                    .then(data => console.log("✅ Health check API:", data))
+                    .catch(error => console.error("❌ Health check API failed:", error));
+                    
+                fetch('/debug')
+                    .then(response => response.json())
+                    .then(data => console.log("🔍 Debug info:", data))
+                    .catch(error => console.error("❌ Debug API failed:", error));
+            }, 1000); // Ждем 1 секунду для инициализации
+        });
     </script>
 </body>
 </html> 
