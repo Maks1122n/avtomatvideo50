@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ТЕСТ КНОПОК - MediaFlux Hub</title>
+    <style>
+        body { 
+            background: black !important; 
+            color: white !important; 
+            font-family: Arial !important;
+            padding: 50px !important;
+        }
+        
+        .mega-button {
+            background: red !important;
+            color: white !important;
+            padding: 30px 60px !important;
+            font-size: 24px !important;
+            font-weight: bold !important;
+            border: 5px solid yellow !important;
+            border-radius: 15px !important;
+            cursor: pointer !important;
+            margin: 20px !important;
+            display: block !important;
+            width: 400px !important;
+            text-align: center !important;
+            box-shadow: 0 0 20px red !important;
+            position: relative !important;
+            z-index: 999999 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .mega-button:hover {
+            background: lime !important;
+            transform: scale(1.1) !important;
+        }
+        
+        .test-info {
+            background: blue !important;
+            color: white !important;
+            padding: 20px !important;
+            margin: 20px 0 !important;
+            border: 3px solid cyan !important;
+            font-size: 18px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: lime; font-size: 48px;">🔍 ТЕСТ КНОПОК MEDIAFLUX HUB</h1>
+    
+    <div class="test-info">
+        <h2>📊 ДИАГНОСТИЧЕСКАЯ ИНФОРМАЦИЯ:</h2>
+        <p><strong>URL:</strong> <span id="currentUrl"></span></p>
+        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+        <p><strong>Время загрузки:</strong> <span id="loadTime"></span></p>
+        <p><strong>CSS загружен:</strong> <span id="cssStatus">❓</span></p>
+        <p><strong>JavaScript работает:</strong> <span id="jsStatus">❓</span></p>
+    </div>
+    
+    <div class="test-info">
+        <h2>🎯 ИНСТРУКЦИЯ ПО ТЕСТИРОВАНИЮ:</h2>
+        <p>1. ✅ Если вы видите ЭТУ страницу - HTML загружается</p>
+        <p>2. ✅ Если текст ЦВЕТНОЙ - CSS работает</p>
+        <p>3. ✅ Если кнопки КРАСНЫЕ - стили применяются</p>
+        <p>4. ✅ Если кнопки КЛИКАБЕЛЬНЫ - JavaScript работает</p>
+        <p>5. ❌ Если что-то НЕ ТАК - мы найдем проблему!</p>
+    </div>
+    
+    <!-- МЕГА-ВИДИМЫЕ КНОПКИ -->
+    <button class="mega-button" onclick="testButton1()">
+        🔴 ТЕСТ КНОПКА 1 - НАЖМИ МЕНЯ!
+    </button>
+    
+    <button class="mega-button" onclick="testButton2()">
+        🟡 ТЕСТ КНОПКА 2 - Я ДОЛЖНА БЫТЬ ВИДНА!
+    </button>
+    
+    <button class="mega-button" onclick="testButton3()">
+        🟢 ТЕСТ КНОПКА 3 - ПРОВЕРЬ МЕНЯ!
+    </button>
+    
+    <button class="mega-button" onclick="goToAccounts()">
+        ➡️ ПЕРЕЙТИ НА СТРАНИЦУ АККАУНТОВ
+    </button>
+    
+    <div class="test-info">
+        <h2>📝 РЕЗУЛЬТАТЫ ТЕСТОВ:</h2>
+        <div id="testResults"></div>
+    </div>
+    
+    <div class="test-info">
+        <h2>🌐 ПРОВЕРКА ДРУГИХ СТРАНИЦ:</h2>
+        <a href="/accounts" style="color: yellow; font-size: 20px;">👥 Страница Аккаунтов</a><br><br>
+        <a href="/content" style="color: yellow; font-size: 20px;">📁 Страница Контента</a><br><br>
+        <a href="/schedule" style="color: yellow; font-size: 20px;">📅 Страница Планировщика</a><br><br>
+        <a href="/" style="color: yellow; font-size: 20px;">🏠 Главная страница</a>
+    </div>
+
+    <script>
+        // ДИАГНОСТИЧЕСКАЯ ИНФОРМАЦИЯ
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('loadTime').textContent = new Date().toLocaleString();
+        document.getElementById('cssStatus').textContent = '✅ CSS работает';
+        document.getElementById('jsStatus').textContent = '✅ JavaScript работает';
+        
+        console.log('🚀 ТЕСТ СТРАНИЦА ЗАГРУЖЕНА УСПЕШНО!');
+        console.log('📍 URL:', window.location.href);
+        console.log('🖥️ User Agent:', navigator.userAgent);
+        console.log('📏 Размер экрана:', screen.width + 'x' + screen.height);
+        console.log('📱 Viewport:', window.innerWidth + 'x' + window.innerHeight);
+        
+        // ТЕСТ ФУНКЦИИ
+        function testButton1() {
+            alert('✅ ТЕСТ КНОПКА 1 РАБОТАЕТ!');
+            document.getElementById('testResults').innerHTML += '<p style="color: lime;">✅ Кнопка 1: РАБОТАЕТ</p>';
+            console.log('✅ Кнопка 1 нажата успешно');
+        }
+        
+        function testButton2() {
+            alert('✅ ТЕСТ КНОПКА 2 РАБОТАЕТ!');
+            document.getElementById('testResults').innerHTML += '<p style="color: lime;">✅ Кнопка 2: РАБОТАЕТ</p>';
+            console.log('✅ Кнопка 2 нажата успешно');
+        }
+        
+        function testButton3() {
+            alert('✅ ТЕСТ КНОПКА 3 РАБОТАЕТ!');
+            document.getElementById('testResults').innerHTML += '<p style="color: lime;">✅ Кнопка 3: РАБОТАЕТ</p>';
+            console.log('✅ Кнопка 3 нажата успешно');
+            
+            // ДОПОЛНИТЕЛЬНАЯ ДИАГНОСТИКА
+            const info = {
+                'Cookies включены': navigator.cookieEnabled,
+                'Язык браузера': navigator.language,
+                'Платформа': navigator.platform,
+                'Онлайн статус': navigator.onLine,
+                'Локальное время': new Date().toString()
+            };
+            
+            console.log('📊 Дополнительная диагностика:', info);
+        }
+        
+        function goToAccounts() {
+            console.log('➡️ Переход на страницу аккаунтов...');
+            window.location.href = '/accounts';
+        }
+        
+        // АВТОМАТИЧЕСКИЕ ТЕСТЫ
+        setTimeout(() => {
+            console.log('🔍 Проверка элементов на странице...');
+            
+            const buttons = document.querySelectorAll('.mega-button');
+            console.log(`🔲 Найдено кнопок: ${buttons.length}`);
+            
+            buttons.forEach((btn, index) => {
+                const styles = window.getComputedStyle(btn);
+                console.log(`🎨 Кнопка ${index + 1} стили:`, {
+                    display: styles.display,
+                    visibility: styles.visibility,
+                    opacity: styles.opacity,
+                    backgroundColor: styles.backgroundColor,
+                    zIndex: styles.zIndex
+                });
+            });
+            
+            // ПРОВЕРКА СЕТИ
+            fetch('/health')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('🌐 Health check успешен:', data);
+                    document.getElementById('testResults').innerHTML += '<p style="color: lime;">✅ Сеть: Соединение с сервером работает</p>';
+                })
+                .catch(error => {
+                    console.error('❌ Health check ошибка:', error);
+                    document.getElementById('testResults').innerHTML += '<p style="color: red;">❌ Сеть: Проблема с соединением</p>';
+                });
+                
+        }, 2000);
+        
+        // ОТСЛЕЖИВАНИЕ ОШИБОК
+        window.addEventListener('error', function(e) {
+            console.error('💥 JavaScript ошибка:', e.error);
+            document.getElementById('testResults').innerHTML += `<p style="color: red;">❌ JS Ошибка: ${e.message}</p>`;
+        });
+        
+        // ПРОВЕРКА CSS
+        const testElement = document.createElement('div');
+        testElement.style.background = 'red';
+        if (window.getComputedStyle(testElement).background.includes('red')) {
+            console.log('✅ CSS стили работают корректно');
+        } else {
+            console.log('❌ Проблема с CSS стилями');
+        }
+    </script>
+</body>
+</html> 

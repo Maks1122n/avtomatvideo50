@@ -84,6 +84,11 @@ async def proxies_page(request: Request):
 async def settings_page(request: Request):
     return templates.TemplateResponse("settings.html", {"request": request})
 
+# 🔍 ДИАГНОСТИЧЕСКАЯ ТЕСТОВАЯ СТРАНИЦА
+@app.get("/test-buttons", response_class=HTMLResponse)
+async def test_buttons_page(request: Request):
+    return templates.TemplateResponse("test-buttons.html", {"request": request})
+
 # Health check
 @app.get("/health")
 async def health_check():
