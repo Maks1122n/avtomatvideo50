@@ -1,16 +1,13 @@
-"""
-MediaFlux Hub - Instagram Reels Automation Platform
-Main FastAPI Application
-Updated: 2024-12-19 for Render.com deployment
-"""
+# FORCE RENDER UPDATE - 2024-12-19 21:35:00
+# MediaFlux Hub - Instagram Automation Platform
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 
 # Настройка логирования
