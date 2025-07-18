@@ -1368,12 +1368,161 @@
             0%, 100% { box-shadow: var(--shadow-glow-green); }
             50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
         }
+
+        /* MOBILE NAVIGATION */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 0 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .mobile-overlay.show {
+            opacity: 1;
+        }
+
+        /* RESPONSIVE STYLES */
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                height: 100vh;
+                transition: var(--transition-smooth);
+                z-index: 1001;
+                width: var(--sidebar-width);
+                box-shadow: var(--shadow-xl);
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+                width: 100%;
+            }
+
+            .dashboard {
+                padding-left: 0;
+            }
+
+            .mobile-overlay {
+                display: block;
+            }
+
+            /* Улучшения для мобильных */
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .account-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions .action-btn {
+                padding: 1rem;
+            }
+
+            .action-btn .btn-content {
+                flex: 1;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- MOBILE HEADER -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <span id="menu-icon">☰</span>
+        </button>
+        <div class="mobile-logo">
+            <span>📱</span>
+            <span>MediaFlux Hub</span>
+        </div>
+    </div>
+
+    <!-- MOBILE OVERLAY -->
+    <div class="mobile-overlay" onclick="closeMobileMenu()"></div>
+
     <div class="dashboard">
         <!-- ОБЯЗАТЕЛЬНАЯ НАВИГАЦИЯ -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
                 <span class="logo-icon">📱</span>
                 <span class="logo-text">MediaFlux Hub</span>
@@ -1989,6 +2138,65 @@
 
     <!-- JAVASCRIPT -->
     <script>
+        // MOBILE MENU FUNCTIONS
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            if (sidebar.classList.contains('mobile-open')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+
+        function openMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            sidebar.classList.add('mobile-open');
+            overlay.classList.add('show');
+            menuIcon.textContent = '✕';
+            
+            // Блокируем скролл body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.mobile-overlay');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('show');
+            menuIcon.textContent = '☰';
+            
+            // Восстанавливаем скролл body
+            document.body.style.overflow = '';
+        }
+
+        // Закрытие меню при нажатии на ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Закрытие меню при клике на навигационную ссылку (для мобильных)
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Закрываем мобильное меню при клике на ссылку
+                    if (window.innerWidth <= 768) {
+                        closeMobileMenu();
+                    }
+                });
+            });
+        });
+
         // JavaScript для переключения страниц
         function showPage(pageId) {
             // Скрыть все страницы
@@ -2135,13 +2343,6 @@
         // Закрытие модального окна по клику на overlay
         document.getElementById('modal-overlay').addEventListener('click', function(e) {
             if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Закрытие модального окна по ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
                 closeModal();
             }
         });
