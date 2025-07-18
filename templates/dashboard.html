@@ -257,6 +257,35 @@
     <!-- Notification Container -->
     <div class="notification-container" id="notification-container"></div>
 
+    <!-- JavaScript -->
     <script src="/static/js/dashboard.js"></script>
+    
+    <!-- Debug script для отладки на production -->
+    <script>
+        console.log("🔍 MediaFlux Hub Debug Info:");
+        console.log("📄 HTML loaded");
+        console.log("🎯 Start automation button:", document.getElementById('start-automation'));
+        console.log("➕ Add account button:", document.getElementById('add-account'));
+        console.log("📁 Upload content button:", document.getElementById('upload-content'));
+        console.log("📅 Create schedule button:", document.getElementById('create-schedule'));
+        
+        // Проверяем что JavaScript файл загрузился
+        if (typeof MediaFluxDashboard !== 'undefined') {
+            console.log("✅ Dashboard JavaScript loaded successfully");
+        } else {
+            console.error("❌ Dashboard JavaScript failed to load");
+        }
+        
+        // Проверяем API endpoints
+        fetch('/health')
+            .then(response => response.json())
+            .then(data => console.log("✅ Health check API:", data))
+            .catch(error => console.error("❌ Health check API failed:", error));
+            
+        fetch('/debug')
+            .then(response => response.json())
+            .then(data => console.log("🔍 Debug info:", data))
+            .catch(error => console.error("❌ Debug API failed:", error));
+    </script>
 </body>
 </html> 

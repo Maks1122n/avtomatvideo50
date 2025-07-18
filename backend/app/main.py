@@ -75,11 +75,60 @@ async def health_check():
         "version": "1.0.0"
     }
 
+# Диагностический endpoint
+@app.get("/debug")
+async def debug_info():
+    """Диагностический endpoint для проверки настроек"""
+    import os
+    import pathlib
+    
+    templates_exists = pathlib.Path(TEMPLATES_DIR).exists()
+    static_exists = pathlib.Path(STATIC_DIR).exists()
+    
+    templates_files = []
+    static_files = []
+    
+    if templates_exists:
+        templates_files = [str(f) for f in pathlib.Path(TEMPLATES_DIR).glob("*")]
+    
+    if static_exists:
+        static_files = [str(f) for f in pathlib.Path(STATIC_DIR).glob("**/*")]
+    
+    return {
+        "environment": ENVIRONMENT,
+        "templates_dir": TEMPLATES_DIR,
+        "static_dir": STATIC_DIR,
+        "templates_exists": templates_exists,
+        "static_exists": static_exists,
+        "templates_files": templates_files[:10],  # Первые 10 файлов
+        "static_files": static_files[:20],        # Первые 20 файлов
+        "working_directory": str(pathlib.Path.cwd()),
+        "api_available": API_AVAILABLE,
+        "python_path": os.environ.get("PYTHONPATH", "Not set")
+    }
+
 # Настройка шаблонов
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 # Статические файлы
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# Детальное логирование статических файлов
+import pathlib
+templates_path = pathlib.Path(TEMPLATES_DIR)
+static_path = pathlib.Path(STATIC_DIR)
+
+logger.info(f"📁 Templates path exists: {templates_path.exists()}")
+logger.info(f"🎨 Static path exists: {static_path.exists()}")
+
+if templates_path.exists():
+    template_files = list(templates_path.glob("*.html"))
+    logger.info(f"📄 Found {len(template_files)} template files")
+    
+if static_path.exists():
+    css_files = list(static_path.glob("**/*.css"))
+    js_files = list(static_path.glob("**/*.js"))
+    logger.info(f"🎨 Found {len(css_files)} CSS files, {len(js_files)} JS files")
 
 # Импорт API роутеров
 try:
