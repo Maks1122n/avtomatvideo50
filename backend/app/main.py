@@ -1,5 +1,5 @@
-# 🔥 RENDER FORCE UPDATE - 2024-12-19-21:55:00 - COMPLETE API INTEGRATION
-# TIMESTAMP: 1734636300 - FORCE BUTTONS FUNCTIONALITY
+# 🔥 RENDER FORCE UPDATE - 2024-12-19-22:10:00 - STATIC PATH HOTFIX  
+# TIMESTAMP: 1734637200 - CRITICAL PATH FIX
 # MediaFlux Hub - Instagram Automation Platform
 import logging
 from contextlib import asynccontextmanager
@@ -40,11 +40,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Шаблоны
-templates = Jinja2Templates(directory="../templates")
+# Шаблоны - ИСПРАВЛЕННЫЙ ПУТЬ
+templates = Jinja2Templates(directory="templates")
 
-# Статические файлы
-app.mount("/static", StaticFiles(directory="../static"), name="static")
+# Статические файлы - ИСПРАВЛЕННЫЙ ПУТЬ  
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Подключение API роутеров ТОЛЬКО если доступны
 if API_AVAILABLE:
@@ -94,7 +94,7 @@ async def health_check():
         "version": "1.0.0",
         "api_available": API_AVAILABLE,
         "timestamp": datetime.datetime.now().isoformat(),
-        "deployment_id": "FORCE_BUTTONS_FIX_002"
+        "deployment_id": "STATIC_PATH_FIX_001"
     }
 
 # Favicon
