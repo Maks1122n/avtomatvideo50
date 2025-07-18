@@ -1,5 +1,5 @@
-# 🔥 RENDER FORCE UPDATE - 2025-01-18-21:45:00 - PRODUCTION SYNC TRIGGER  
-# TIMESTAMP: 1737228300 - FORCE DEPLOYMENT UPDATE
+# 🔥 RENDER FORCE UPDATE - 2025-01-18-22:30:00 - ROUTING FIX DEPLOYMENT  
+# TIMESTAMP: 1737233400 - BEAUTIFUL DASHBOARD ON MAIN PAGE
 # MediaFlux Hub - Instagram Automation Platform
 import logging
 import os
@@ -116,7 +116,7 @@ async def health_check():
         "version": "1.0.0",
         "api_available": API_AVAILABLE,
         "timestamp": datetime.datetime.now().isoformat(),
-        "deployment_id": "STATIC_PATH_EMERGENCY_FIX_003",
+        "deployment_id": "BEAUTIFUL_DASHBOARD_MAIN_004",
         "test_page_available": True
     }
 
