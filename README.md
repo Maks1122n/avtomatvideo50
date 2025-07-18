@@ -1,4 +1,18 @@
-# 🚀 MediaFlux Hub - Instagram Reels Automation Platform
+# MediaFlux Hub
+
+🔥 **FORCE RENDER REBUILD - TIMESTAMP: 1734635103**
+🚨 **EMERGENCY DEPLOY - FULL TEMPLATES READY**
+
+Instagram Reels Automation Platform
+
+## ✅ STATUS: EMERGENCY DEPLOYMENT IN PROGRESS
+
+Полные функциональные страницы:
+- accounts.html: 398 строк
+- content.html: 540 строк  
+- schedule.html: полные формы
+
+---
 
 **MediaFlux Hub** - это профессиональная платформа для автоматизации публикаций Instagram Reels с мощным ИИ-планировщиком, антибан-защитой и современным веб-интерфейсом.
 
