@@ -112,11 +112,11 @@ async def health_check():
     import datetime
     return {
         "status": "healthy",
-        "service": "MediaFlux Hub",
+        "service": "MediaFlux Hub", 
         "version": "1.0.0",
         "api_available": API_AVAILABLE,
         "timestamp": datetime.datetime.now().isoformat(),
-        "deployment_id": "BEAUTIFUL_DASHBOARD_MAIN_004",
+        "deployment_id": "MODERN_DESIGN_INTEGRATED_005",
         "test_page_available": True
     }
 
