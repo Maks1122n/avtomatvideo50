@@ -69,10 +69,14 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     """Health check endpoint для Render"""
+    import datetime
     return {
         "status": "healthy",
         "service": "MediaFlux Hub",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "api_available": API_AVAILABLE,
+        "timestamp": datetime.datetime.now().isoformat(),
+        "templates_loaded": ["dashboard", "accounts", "content", "schedule", "analytics", "settings", "proxies"]
     }
 
 # Диагностический endpoint
