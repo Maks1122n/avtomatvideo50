@@ -40,11 +40,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Шаблоны - ИСПРАВЛЕННЫЙ ПУТЬ
-templates = Jinja2Templates(directory="../templates")
+# Шаблоны - ПРАВИЛЬНЫЙ ПУТЬ
+templates = Jinja2Templates(directory="templates")
 
-# Статические файлы - ИСПРАВЛЕННЫЙ ПУТЬ  
-app.mount("/static", StaticFiles(directory="../static"), name="static")
+# Статические файлы - ПРАВИЛЬНЫЙ ПУТЬ  
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Подключение API роутеров ТОЛЬКО если доступны
 if API_AVAILABLE:
@@ -106,7 +106,7 @@ async def health_check():
         "version": "1.0.0",
         "api_available": API_AVAILABLE,
         "timestamp": datetime.datetime.now().isoformat(),
-        "deployment_id": "TEST_BUTTONS_FORCE_UPDATE_001",
+        "deployment_id": "STATIC_PATH_EMERGENCY_FIX_003",
         "test_page_available": True
     }
 
