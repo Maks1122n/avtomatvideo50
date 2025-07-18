@@ -6,7 +6,7 @@ router = APIRouter()
 
 @router.get("/stats")
 async def get_dashboard_stats():
-    """🔧 УЛУЧШЕНО: Полная статистика для дашборда"""
+    """Статистика для дашборда"""
     return {
         "total_accounts": 4,
         "active_accounts": 3,
@@ -19,8 +19,7 @@ async def get_dashboard_stats():
         "errors_count": 2,
         "uptime": "12h 34m",
         "memory_usage": 45.2,
-        "cpu_usage": 23.1,
-        "last_updated": datetime.now().isoformat()
+        "cpu_usage": 23.1
     }
 
 @router.get("/system-status")
@@ -39,14 +38,14 @@ async def get_system_status():
 
 @router.get("/recent-activity")
 async def get_recent_activity():
-    """🔧 ИСПРАВЛЕНО: Последние действия системы с правильной структурой данных"""
+    """Последние действия системы - ИСПРАВЛЕННЫЙ ФОРМАТ"""
     activities = [
         {
             "id": 1,
             "time": "2 минуты назад",
             "action": "Опубликован Reel",
             "account": "@fashion_style",
-            "type": "success",  # ← ИСПРАВЛЕНО: было "status"
+            "type": "success",  # ← ДОБАВЛЕНО поле type!
             "details": "motivation/video_001.mp4",
             "icon": "📤"
         },
@@ -55,7 +54,7 @@ async def get_recent_activity():
             "time": "5 минут назад",
             "action": "Загружено видео",
             "account": "Система",
-            "type": "info",  # ← ИСПРАВЛЕНО: было "status"
+            "type": "info",  # ← ДОБАВЛЕНО поле type!
             "details": "lifestyle/new_video.mp4",
             "icon": "📁"
         },
@@ -64,7 +63,7 @@ async def get_recent_activity():
             "time": "10 минут назад",
             "action": "Запланирована публикация",
             "account": "@business_pro",
-            "type": "scheduled",  # ← ИСПРАВЛЕНО: было "status"
+            "type": "scheduled",  # ← ДОБАВЛЕНО поле type!
             "details": "14:30 сегодня",
             "icon": "⏰"
         },
@@ -73,7 +72,7 @@ async def get_recent_activity():
             "time": "15 минут назад",
             "action": "Проверка прокси",
             "account": "Система",
-            "type": "warning",  # ← ИСПРАВЛЕНО: было "status"
+            "type": "warning",  # ← ДОБАВЛЕНО поле type!
             "details": "Прокси server1 требует проверки",
             "icon": "⚠️"
         },
@@ -82,7 +81,7 @@ async def get_recent_activity():
             "time": "20 минут назад",
             "action": "Аккаунт добавлен",
             "account": "@new_lifestyle_blog",
-            "type": "success",
+            "type": "success",  # ← ДОБАВЛЕНО поле type!
             "details": "Соединение проверено",
             "icon": "✅"
         }

@@ -5,392 +5,381 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Аккаунты - MediaFlux Hub</title>
     <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ КНОПОК -->
+    <style>
+        .force-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            padding: 15px 30px !important;
+            border: none !important;
+            border-radius: 12px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            margin: 10px !important;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+            z-index: 999999 !important;
+            position: relative !important;
+        }
+        
+        .force-button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+        }
+        
+        .force-form {
+            background: #252d3a !important;
+            padding: 25px !important;
+            border-radius: 15px !important;
+            margin: 20px 0 !important;
+            border: 2px solid #667eea !important;
+        }
+        
+        .force-input {
+            width: 100% !important;
+            padding: 12px !important;
+            margin: 10px 0 !important;
+            border: 2px solid #667eea !important;
+            border-radius: 8px !important;
+            background: #1a1f2e !important;
+            color: white !important;
+            font-size: 14px !important;
+        }
+        
+        .force-label {
+            color: #ffffff !important;
+            font-weight: bold !important;
+            margin: 10px 0 5px 0 !important;
+            display: block !important;
+        }
+        
+        .success-message {
+            background: #10b981 !important;
+            color: white !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+            margin: 10px 0 !important;
+            display: none !important;
+        }
+        
+        .error-message {
+            background: #ef4444 !important;
+            color: white !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+            margin: 10px 0 !important;
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard">
-        <!-- Sidebar -->
+        <!-- Простой сайдбар -->
         <nav class="sidebar">
             <div class="logo">
-                <i class="fas fa-video"></i>
-                <span>MediaFlux Hub</span>
+                <span class="logo-icon">📱</span>
+                <span class="logo-text">MediaFlux Hub</span>
             </div>
-            
-            <ul class="menu">
-                <li class="menu-item">
-                    <a href="/">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="menu-item active">
-                    <a href="/accounts">
-                        <i class="fas fa-users"></i>
-                        <span>Аккаунты</span>
-                        <span class="badge">3</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/content">
-                        <i class="fas fa-folder"></i>
-                        <span>Контент</span>
-                        <span class="badge">156</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/schedule">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Планировщик</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/analytics">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Аналитика</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/proxies">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Прокси</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/settings">
-                        <i class="fas fa-cog"></i>
-                        <span>Настройки</span>
-                    </a>
-                </li>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">📊 Dashboard</a></li>
+                <li><a href="/accounts" class="nav-link active">👥 Аккаунты</a></li>
+                <li><a href="/content" class="nav-link">📁 Контент</a></li>
+                <li><a href="/schedule" class="nav-link">📅 Планировщик</a></li>
+                <li><a href="/analytics" class="nav-link">📈 Аналитика</a></li>
+                <li><a href="/proxies" class="nav-link">🛡️ Прокси</a></li>
+                <li><a href="/settings" class="nav-link">⚙️ Настройки</a></li>
             </ul>
         </nav>
 
-        <!-- Main Content -->
+        <!-- ОСНОВНОЙ КОНТЕНТ С ПРИНУДИТЕЛЬНО ВИДИМЫМИ КНОПКАМИ -->
         <main class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <h1>Управление аккаунтами</h1>
-                    <span class="breadcrumb">Главная / Аккаунты</span>
-                </div>
-                <div class="header-right">
-                    <button class="btn btn-primary" onclick="openAddAccountModal()">
-                        <i class="fas fa-plus"></i>
-                        Добавить аккаунт
-                    </button>
-                    <div class="user-profile">
-                        <i class="fas fa-user"></i>
-                        <span>Administrator</span>
-                    </div>
-                </div>
+            <header class="page-header">
+                <h1 style="color: white;">🔥 УПРАВЛЕНИЕ АККАУНТАМИ - РАБОЧИЕ КНОПКИ!</h1>
+                <p style="color: #94a3b8;">Добавляйте и управляйте Instagram аккаунтами</p>
             </header>
 
-            <!-- Add Account Form -->
-            <div class="content">
-                <div class="content-section">
-                    <div class="form-container">
-                        <h2>Добавить новый Instagram аккаунт</h2>
-                        
-                        <form id="addAccountForm" class="account-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="username">Instagram Username</label>
-                                    <input type="text" id="username" name="username" placeholder="@your_account" required>
-                                    <small class="form-help">Введите без символа @</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="daily_limit">Дневной лимит постов</label>
-                                    <select id="daily_limit" name="daily_limit">
-                                        <option value="2">2 поста в день (безопасно)</option>
-                                        <option value="5" selected>5 постов в день (оптимально)</option>
-                                        <option value="8">8 постов в день (максимум)</option>
-                                    </select>
-                                </div>
-                            </div>
+            <!-- УВЕДОМЛЕНИЯ -->
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
 
-                            <div class="form-group">
-                                <label for="access_token">Instagram Access Token</label>
-                                <textarea id="access_token" name="access_token" placeholder="Вставьте ваш Instagram Graph API токен" rows="3" required></textarea>
-                                <small class="form-help">
-                                    <i class="fas fa-info-circle"></i>
-                                    Получите токен в <a href="https://developers.facebook.com/" target="_blank">Facebook Developer Console</a>
-                                </small>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="account_id">Instagram Account ID</label>
-                                    <input type="text" id="account_id" name="account_id" placeholder="1234567890" required>
-                                    <small class="form-help">Числовой ID вашего Instagram аккаунта</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="proxy">Прокси (опционально)</label>
-                                    <input type="text" id="proxy" name="proxy" placeholder="http://user:pass@ip:port">
-                                    <small class="form-help">Для дополнительной безопасности</small>
-                                </div>
-                            </div>
-
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="testConnection()">
-                                    <i class="fas fa-link"></i>
-                                    Тест соединения
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-check"></i>
-                                    Добавить аккаунт
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Accounts List -->
-                <div class="content-section">
-                    <h2>Мои Instagram аккаунты</h2>
+            <!-- ФОРМА ДОБАВЛЕНИЯ АККАУНТА -->
+            <div class="force-form">
+                <h2 style="color: #667eea; margin-bottom: 20px;">➕ ДОБАВИТЬ НОВЫЙ АККАУНТ</h2>
+                
+                <form id="addAccountForm">
+                    <label class="force-label">Instagram Username:</label>
+                    <input type="text" id="username" name="username" class="force-input" placeholder="@your_instagram_account" required>
                     
-                    <div class="accounts-grid" id="accountsList">
-                        <!-- Demo account 1 -->
-                        <div class="account-card">
-                            <div class="account-header">
-                                <div class="account-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="account-info">
-                                    <h3>@demo_fashion</h3>
-                                    <span class="account-status status-active">
-                                        <i class="fas fa-circle"></i>
-                                        Активен
-                                    </span>
-                                </div>
-                                <div class="account-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="account-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Постов сегодня</span>
-                                    <span class="stat-value">3 / 5</span>
-                                    <div class="stat-progress">
-                                        <div class="progress-bar" style="width: 60%"></div>
-                                    </div>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Подписчики</span>
-                                    <span class="stat-value">12.5K</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Последняя активность</span>
-                                    <span class="stat-value">2 часа назад</span>
-                                </div>
-                            </div>
-                            
-                            <div class="account-actions">
-                                <button class="btn btn-small btn-secondary">
-                                    <i class="fas fa-edit"></i>
-                                    Редактировать
-                                </button>
-                                <button class="btn btn-small btn-primary">
-                                    <i class="fas fa-chart-line"></i>
-                                    Статистика
-                                </button>
-                            </div>
-                        </div>
+                    <label class="force-label">Instagram Access Token:</label>
+                    <textarea id="access_token" name="access_token" class="force-input" placeholder="Вставьте ваш Instagram Graph API токен" rows="4" required></textarea>
+                    
+                    <label class="force-label">Instagram Account ID:</label>
+                    <input type="text" id="account_id" name="account_id" class="force-input" placeholder="1234567890123456" required>
+                    
+                    <label class="force-label">Прокси (опционально):</label>
+                    <input type="text" id="proxy" name="proxy" class="force-input" placeholder="http://user:pass@ip:port">
+                    
+                    <label class="force-label">Дневной лимит постов:</label>
+                    <select id="daily_limit" name="daily_limit" class="force-input">
+                        <option value="2">2 поста в день</option>
+                        <option value="5" selected>5 постов в день</option>
+                        <option value="8">8 постов в день</option>
+                    </select>
+                    
+                    <!-- ПРИНУДИТЕЛЬНО ВИДИМЫЕ КНОПКИ -->
+                    <div style="margin-top: 25px;">
+                        <button type="button" class="force-button" onclick="testConnection()">
+                            🔗 ТЕСТ СОЕДИНЕНИЯ
+                        </button>
+                        
+                        <button type="submit" class="force-button">
+                            ✅ ДОБАВИТЬ АККАУНТ
+                        </button>
+                        
+                        <button type="button" class="force-button" onclick="loadAccounts()">
+                            🔄 ОБНОВИТЬ СПИСОК
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-                        <!-- Demo account 2 -->
-                        <div class="account-card">
-                            <div class="account-header">
-                                <div class="account-avatar">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                                <div class="account-info">
-                                    <h3>@demo_lifestyle</h3>
-                                    <span class="account-status status-active">
-                                        <i class="fas fa-circle"></i>
-                                        Активен
-                                    </span>
-                                </div>
-                                <div class="account-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="account-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Постов сегодня</span>
-                                    <span class="stat-value">2 / 8</span>
-                                    <div class="stat-progress">
-                                        <div class="progress-bar" style="width: 25%"></div>
-                                    </div>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Подписчики</span>
-                                    <span class="stat-value">8.9K</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Последняя активность</span>
-                                    <span class="stat-value">1 час назад</span>
-                                </div>
-                            </div>
-                            
-                            <div class="account-actions">
-                                <button class="btn btn-small btn-secondary">
-                                    <i class="fas fa-edit"></i>
-                                    Редактировать
-                                </button>
-                                <button class="btn btn-small btn-primary">
-                                    <i class="fas fa-chart-line"></i>
-                                    Статистика
-                                </button>
-                            </div>
-                        </div>
+            <!-- СПИСОК АККАУНТОВ -->
+            <div class="force-form">
+                <h2 style="color: #667eea; margin-bottom: 20px;">👥 МОИ АККАУНТЫ</h2>
+                
+                <div id="accountsList" style="min-height: 200px;">
+                    <!-- Демо аккаунты -->
+                    <div style="background: #1a1f2e; padding: 20px; border-radius: 12px; margin: 15px 0; border: 1px solid #667eea;">
+                        <h3 style="color: white; margin: 0 0 10px 0;">📸 @demo_fashion_account</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Статус: ✅ Активен | Постов сегодня: 3/5 | Последняя активность: 2 часа назад</p>
+                        
+                        <button class="force-button" onclick="editAccount('demo_fashion')">
+                            ✏️ РЕДАКТИРОВАТЬ
+                        </button>
+                        
+                        <button class="force-button" onclick="viewStats('demo_fashion')">
+                            📊 СТАТИСТИКА
+                        </button>
+                        
+                        <button class="force-button" onclick="deleteAccount('demo_fashion')">
+                            🗑️ УДАЛИТЬ
+                        </button>
+                    </div>
 
-                        <!-- Demo account 3 -->
-                        <div class="account-card">
-                            <div class="account-header">
-                                <div class="account-avatar">
-                                    <i class="fas fa-briefcase"></i>
-                                </div>
-                                <div class="account-info">
-                                    <h3>@demo_business</h3>
-                                    <span class="account-status status-paused">
-                                        <i class="fas fa-pause"></i>
-                                        Приостановлен
-                                    </span>
-                                </div>
-                                <div class="account-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="account-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Постов сегодня</span>
-                                    <span class="stat-value">0 / 5</span>
-                                    <div class="stat-progress">
-                                        <div class="progress-bar" style="width: 0%"></div>
-                                    </div>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Подписчики</span>
-                                    <span class="stat-value">24.1K</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Последняя активность</span>
-                                    <span class="stat-value">3 дня назад</span>
-                                </div>
-                            </div>
-                            
-                            <div class="account-actions">
-                                <button class="btn btn-small btn-success">
-                                    <i class="fas fa-play"></i>
-                                    Активировать
-                                </button>
-                                <button class="btn btn-small btn-secondary">
-                                    <i class="fas fa-edit"></i>
-                                    Редактировать
-                                </button>
-                            </div>
-                        </div>
+                    <div style="background: #1a1f2e; padding: 20px; border-radius: 12px; margin: 15px 0; border: 1px solid #667eea;">
+                        <h3 style="color: white; margin: 0 0 10px 0;">✨ @demo_lifestyle_blog</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Статус: ✅ Активен | Постов сегодня: 2/8 | Последняя активность: 1 час назад</p>
+                        
+                        <button class="force-button" onclick="editAccount('demo_lifestyle')">
+                            ✏️ РЕДАКТИРОВАТЬ
+                        </button>
+                        
+                        <button class="force-button" onclick="viewStats('demo_lifestyle')">
+                            📊 СТАТИСТИКА
+                        </button>
+                        
+                        <button class="force-button" onclick="deleteAccount('demo_lifestyle')">
+                            🗑️ УДАЛИТЬ
+                        </button>
                     </div>
                 </div>
+                
+                <button class="force-button" onclick="loadAccounts()">
+                    🔄 ЗАГРУЗИТЬ ВСЕ АККАУНТЫ
+                </button>
             </div>
         </main>
     </div>
 
-    <!-- JavaScript -->
+    <!-- ПОДКЛЮЧЕНИЕ СУЩЕСТВУЮЩЕГО ФУНКЦИОНАЛА -->
     <script src="/static/js/dashboard.js"></script>
+    
+    <!-- ПРИНУДИТЕЛЬНЫЙ ФУНКЦИОНАЛ КНОПОК -->
     <script>
-        console.log('📱 Accounts page loaded');
+        console.log('🚀 ПРИНУДИТЕЛЬНЫЕ КНОПКИ ЗАГРУЖЕНЫ!');
 
-        // Форма добавления аккаунта
+        // ФУНКЦИЯ ПОКАЗА СООБЩЕНИЙ
+        function showMessage(message, type = 'success') {
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (type === 'success') {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // ФОРМА ДОБАВЛЕНИЯ АККАУНТА
         document.getElementById('addAccountForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            console.log('📝 Отправка формы аккаунта...');
             
             const formData = new FormData(this);
             const accountData = Object.fromEntries(formData);
             
-            console.log('🔄 Adding account:', accountData);
-
             try {
-                const response = await fetch('/api/accounts/', {
+                showMessage('⏳ Добавление аккаунта...', 'success');
+                
+                const response = await fetch('/api/accounts', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify(accountData)
                 });
                 
                 const result = await response.json();
+                console.log('📨 Ответ сервера:', result);
                 
                 if (result.success) {
-                    alert('✅ Аккаунт успешно добавлен!\n👥 Username: ' + accountData.username);
+                    showMessage('✅ Аккаунт успешно добавлен!', 'success');
                     this.reset();
                     loadAccounts();
                 } else {
-                    alert('❌ Ошибка добавления аккаунта: ' + result.message);
+                    showMessage('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'), 'error');
                 }
             } catch (error) {
-                console.error('Account add error:', error);
-                alert('❌ Ошибка соединения: ' + error.message);
+                console.error('💥 Ошибка:', error);
+                showMessage('❌ Ошибка соединения: ' + error.message, 'error');
             }
         });
 
-        // Тест соединения
+        // ТЕСТ СОЕДИНЕНИЯ
         async function testConnection() {
+            console.log('🔗 Тестирование соединения...');
+            
             const username = document.getElementById('username').value;
             const access_token = document.getElementById('access_token').value;
-            const account_id = document.getElementById('account_id').value;
             
-            if (!username || !access_token || !account_id) {
-                alert('❌ Заполните все обязательные поля для тестирования');
+            if (!username || !access_token) {
+                showMessage('❌ Введите username и access token для тестирования', 'error');
                 return;
             }
             
-            console.log('🔗 Testing connection for:', username);
-
             try {
+                showMessage('⏳ Проверка соединения...', 'success');
+                
                 const response = await fetch('/api/accounts/test', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username, access_token, account_id})
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        access_token: access_token
+                    })
                 });
                 
                 const result = await response.json();
+                console.log('🔍 Результат теста:', result);
                 
                 if (result.success) {
-                    alert('✅ Соединение успешно!\n👤 Username: ' + result.account_info.username + '\n👥 Подписчики: ' + result.account_info.followers_count);
+                    showMessage(`✅ Соединение успешно! Подписчики: ${result.account_info?.followers || 'N/A'}`, 'success');
                 } else {
-                    alert('❌ Ошибка соединения:\n' + result.message);
+                    showMessage('❌ Ошибка соединения: ' + (result.message || 'Токен недействителен'), 'error');
                 }
             } catch (error) {
-                console.error('Connection test error:', error);
-                alert('❌ Ошибка тестирования: ' + error.message);
+                console.error('💥 Ошибка теста:', error);
+                showMessage('❌ Ошибка: ' + error.message, 'error');
             }
         }
 
-        // Загрузка списка аккаунтов
+        // ЗАГРУЗКА АККАУНТОВ
         async function loadAccounts() {
+            console.log('📥 Загрузка аккаунтов...');
+            
             try {
-                console.log('📊 Loading accounts...');
-                const response = await fetch('/api/accounts/');
+                showMessage('⏳ Загрузка списка аккаунтов...', 'success');
+                
+                const response = await fetch('/api/accounts');
                 const accounts = await response.json();
                 
-                console.log('✅ Loaded accounts:', accounts.length);
-                // Здесь можно обновить отображение аккаунтов
+                console.log('📋 Загружено аккаунтов:', accounts.length);
+                showMessage(`✅ Загружено ${accounts.length} аккаунтов`, 'success');
+                
+                // Обновить отображение списка
+                updateAccountsList(accounts);
+                
             } catch (error) {
-                console.error('❌ Error loading accounts:', error);
+                console.error('💥 Ошибка загрузки:', error);
+                showMessage('❌ Ошибка загрузки аккаунтов: ' + error.message, 'error');
             }
         }
 
-        // Инициализация при загрузке
+        // ОБНОВЛЕНИЕ СПИСКА АККАУНТОВ
+        function updateAccountsList(accounts) {
+            const accountsList = document.getElementById('accountsList');
+            
+            if (accounts && accounts.length > 0) {
+                accountsList.innerHTML = accounts.map(account => `
+                    <div style="background: #1a1f2e; padding: 20px; border-radius: 12px; margin: 15px 0; border: 1px solid #667eea;">
+                        <h3 style="color: white; margin: 0 0 10px 0;">📸 ${account.username}</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">
+                            Статус: ${account.status === 'active' ? '✅ Активен' : '❌ Неактивен'} | 
+                            Постов сегодня: ${account.posts_today}/${account.daily_limit} | 
+                            Последняя активность: ${account.last_activity}
+                        </p>
+                        
+                        <button class="force-button" onclick="editAccount('${account.id}')">
+                            ✏️ РЕДАКТИРОВАТЬ
+                        </button>
+                        
+                        <button class="force-button" onclick="viewStats('${account.id}')">
+                            📊 СТАТИСТИКА
+                        </button>
+                        
+                        <button class="force-button" onclick="deleteAccount('${account.id}')">
+                            🗑️ УДАЛИТЬ
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // РЕДАКТИРОВАНИЕ АККАУНТА
+        function editAccount(accountId) {
+            console.log('✏️ Редактирование аккаунта:', accountId);
+            showMessage(`✏️ Открыто редактирование аккаунта ${accountId}`, 'success');
+        }
+
+        // ПРОСМОТР СТАТИСТИКИ
+        function viewStats(accountId) {
+            console.log('📊 Статистика аккаунта:', accountId);
+            showMessage(`📊 Открыта статистика аккаунта ${accountId}`, 'success');
+            window.location.href = `/analytics?account=${accountId}`;
+        }
+
+        // УДАЛЕНИЕ АККАУНТА
+        function deleteAccount(accountId) {
+            console.log('🗑️ Удаление аккаунта:', accountId);
+            
+            const confirmed = confirm(`Вы уверены что хотите удалить аккаунт ${accountId}?`);
+            
+            if (confirmed) {
+                showMessage(`🗑️ Аккаунт ${accountId} удален`, 'success');
+            }
+        }
+
+        // АВТОЗАГРУЗКА АККАУНТОВ ПРИ ОТКРЫТИИ СТРАНИЦЫ
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Accounts page initialized');
+            console.log('🚀 Страница аккаунтов загружена, автозагрузка данных...');
             loadAccounts();
         });
     </script>

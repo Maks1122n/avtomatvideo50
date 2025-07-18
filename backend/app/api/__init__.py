@@ -1,1 +1,1 @@
-# Инициализация API модуля 
+# MediaFlux Hub API Module 

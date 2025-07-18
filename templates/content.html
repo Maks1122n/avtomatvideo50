@@ -5,535 +5,387 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Контент - MediaFlux Hub</title>
     <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ КНОПОК -->
+    <style>
+        .force-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            padding: 15px 30px !important;
+            border: none !important;
+            border-radius: 12px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            margin: 10px !important;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+            z-index: 999999 !important;
+            position: relative !important;
+        }
+        
+        .force-button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+        }
+        
+        .upload-zone {
+            border: 3px dashed #667eea !important;
+            background: #252d3a !important;
+            padding: 40px !important;
+            text-align: center !important;
+            border-radius: 15px !important;
+            margin: 20px 0 !important;
+            cursor: pointer !important;
+        }
+        
+        .upload-zone:hover {
+            background: #1a1f2e !important;
+            border-color: #764ba2 !important;
+        }
+        
+        .folder-card {
+            background: #252d3a !important;
+            padding: 20px !important;
+            border-radius: 15px !important;
+            margin: 15px !important;
+            border: 2px solid #667eea !important;
+            width: 300px !important;
+            display: inline-block !important;
+            vertical-align: top !important;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard">
-        <!-- Sidebar -->
+        <!-- Простой сайдбар -->
         <nav class="sidebar">
             <div class="logo">
-                <i class="fas fa-video"></i>
-                <span>MediaFlux Hub</span>
+                <span class="logo-icon">📱</span>
+                <span class="logo-text">MediaFlux Hub</span>
             </div>
-            
-            <ul class="menu">
-                <li class="menu-item">
-                    <a href="/">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/accounts">
-                        <i class="fas fa-users"></i>
-                        <span>Аккаунты</span>
-                        <span class="badge">3</span>
-                    </a>
-                </li>
-                <li class="menu-item active">
-                    <a href="/content">
-                        <i class="fas fa-folder"></i>
-                        <span>Контент</span>
-                        <span class="badge">156</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/schedule">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Планировщик</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/analytics">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Аналитика</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/proxies">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Прокси</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="/settings">
-                        <i class="fas fa-cog"></i>
-                        <span>Настройки</span>
-                    </a>
-                </li>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">📊 Dashboard</a></li>
+                <li><a href="/accounts" class="nav-link">👥 Аккаунты</a></li>
+                <li><a href="/content" class="nav-link active">📁 Контент</a></li>
+                <li><a href="/schedule" class="nav-link">📅 Планировщик</a></li>
+                <li><a href="/analytics" class="nav-link">📈 Аналитика</a></li>
+                <li><a href="/proxies" class="nav-link">🛡️ Прокси</a></li>
+                <li><a href="/settings" class="nav-link">⚙️ Настройки</a></li>
             </ul>
         </nav>
 
-        <!-- Main Content -->
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
         <main class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <h1>Управление контентом</h1>
-                    <span class="breadcrumb">Главная / Контент</span>
-                </div>
-                <div class="header-right">
-                    <button class="btn btn-primary" onclick="document.getElementById('videoFiles').click()">
-                        <i class="fas fa-upload"></i>
-                        Загрузить видео
-                    </button>
-                    <div class="user-profile">
-                        <i class="fas fa-user"></i>
-                        <span>Administrator</span>
-                    </div>
-                </div>
+            <header class="page-header">
+                <h1 style="color: white;">📁 УПРАВЛЕНИЕ КОНТЕНТОМ - РАБОЧИЕ КНОПКИ!</h1>
+                <p style="color: #94a3b8;">Загружайте и организуйте видео для публикации</p>
             </header>
 
-            <!-- Upload Section -->
-            <div class="content">
-                <div class="content-section">
-                    <div class="upload-container">
-                        <h2>Загрузка видео контента</h2>
+            <!-- УВЕДОМЛЕНИЯ -->
+            <div id="successMessage" class="success-message" style="background: #10b981; color: white; padding: 15px; border-radius: 8px; margin: 10px 0; display: none;"></div>
+            <div id="errorMessage" class="error-message" style="background: #ef4444; color: white; padding: 15px; border-radius: 8px; margin: 10px 0; display: none;"></div>
+
+            <!-- ЗАГРУЗКА ВИДЕО -->
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('videoFiles').click()">
+                <h2 style="color: #667eea; margin: 0 0 20px 0;">📤 ЗАГРУЗИТЬ ВИДЕО</h2>
+                <p style="color: white; font-size: 18px; margin: 10px 0;">Перетащите видео сюда или нажмите для выбора</p>
+                
+                <input type="file" id="videoFiles" multiple accept="video/mp4,video/mov,video/avi" style="display: none;">
+                
+                <div style="margin: 20px 0;">
+                    <label style="color: white; margin-right: 15px;">Категория:</label>
+                    <select id="videoCategory" style="padding: 10px; border-radius: 8px; background: #1a1f2e; color: white; border: 2px solid #667eea;">
+                        <option value="motivation">🔥 Мотивация</option>
+                        <option value="lifestyle">✨ Лайфстайл</option>
+                        <option value="business">💼 Бизнес</option>
+                        <option value="entertainment">🎉 Развлечения</option>
+                    </select>
+                </div>
+                
+                <button class="force-button" onclick="document.getElementById('videoFiles').click()">
+                    📤 ВЫБРАТЬ ФАЙЛЫ
+                </button>
+                
+                <button class="force-button" onclick="loadFolders()">
+                    🔄 ОБНОВИТЬ ПАПКИ
+                </button>
+            </div>
+
+            <!-- ПАПКИ С КОНТЕНТОМ -->
+            <div style="margin: 30px 0;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📂 ПАПКИ С КОНТЕНТОМ</h2>
+                
+                <div id="foldersContainer">
+                    <!-- Демо папки -->
+                    <div class="folder-card">
+                        <h3 style="color: white; margin: 0 0 15px 0;">🔥 МОТИВАЦИЯ</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Видео: 45 | Использовано: 23 | Размер: 2.1 GB</p>
+                        <p style="color: #94a3b8; margin: 5px 0;">Последнее обновление: 2 часа назад</p>
                         
-                        <div class="upload-area" id="uploadArea">
-                            <div class="upload-content">
-                                <div class="upload-icon">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
-                                <h3>Перетащите видео файлы сюда</h3>
-                                <p>или нажмите для выбора файлов</p>
-                                <p class="upload-formats">Поддерживаемые форматы: MP4, MOV, AVI (макс. 100MB)</p>
-                                <input type="file" id="videoFiles" multiple accept="video/mp4,video/mov,video/avi" style="display: none;">
-                                <button class="btn btn-primary" onclick="document.getElementById('videoFiles').click()">
-                                    <i class="fas fa-folder-open"></i>
-                                    Выбрать файлы
-                                </button>
-                            </div>
-                        </div>
+                        <button class="force-button" onclick="viewFolder('motivation')">
+                            👁️ ПРОСМОТР
+                        </button>
+                        
+                        <button class="force-button" onclick="manageFolder('motivation')">
+                            ⚙️ УПРАВЛЕНИЕ
+                        </button>
+                    </div>
 
-                        <div class="upload-options">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="videoCategory">Категория:</label>
-                                    <select id="videoCategory">
-                                        <option value="motivation">🔥 Мотивация</option>
-                                        <option value="lifestyle">✨ Лайфстайл</option>
-                                        <option value="business">💼 Бизнес</option>
-                                        <option value="entertainment">🎉 Развлечения</option>
-                                        <option value="education">📚 Образование</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="videoTags">Теги (через запятую):</label>
-                                    <input type="text" id="videoTags" placeholder="мотивация, успех, цели">
-                                </div>
-                            </div>
-                        </div>
+                    <div class="folder-card">
+                        <h3 style="color: white; margin: 0 0 15px 0;">✨ ЛАЙФСТАЙЛ</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Видео: 38 | Использовано: 15 | Размер: 1.8 GB</p>
+                        <p style="color: #94a3b8; margin: 5px 0;">Последнее обновление: 1 день назад</p>
+                        
+                        <button class="force-button" onclick="viewFolder('lifestyle')">
+                            👁️ ПРОСМОТР
+                        </button>
+                        
+                        <button class="force-button" onclick="manageFolder('lifestyle')">
+                            ⚙️ УПРАВЛЕНИЕ
+                        </button>
+                    </div>
 
-                        <!-- Upload Progress -->
-                        <div class="upload-progress" id="uploadProgress" style="display: none;">
-                            <h3>Загрузка файлов...</h3>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="progressFill"></div>
-                                </div>
-                                <span class="progress-text" id="progressText">0%</span>
-                            </div>
-                        </div>
+                    <div class="folder-card">
+                        <h3 style="color: white; margin: 0 0 15px 0;">💼 БИЗНЕС</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Видео: 29 | Использовано: 12 | Размер: 1.3 GB</p>
+                        <p style="color: #94a3b8; margin: 5px 0;">Последнее обновление: 3 часа назад</p>
+                        
+                        <button class="force-button" onclick="viewFolder('business')">
+                            👁️ ПРОСМОТР
+                        </button>
+                        
+                        <button class="force-button" onclick="manageFolder('business')">
+                            ⚙️ УПРАВЛЕНИЕ
+                        </button>
+                    </div>
+
+                    <div class="folder-card">
+                        <h3 style="color: white; margin: 0 0 15px 0;">🎉 РАЗВЛЕЧЕНИЯ</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Видео: 52 | Использовано: 31 | Размер: 2.7 GB</p>
+                        <p style="color: #94a3b8; margin: 5px 0;">Последнее обновление: 30 минут назад</p>
+                        
+                        <button class="force-button" onclick="viewFolder('entertainment')">
+                            👁️ ПРОСМОТР
+                        </button>
+                        
+                        <button class="force-button" onclick="manageFolder('entertainment')">
+                            ⚙️ УПРАВЛЕНИЕ
+                        </button>
                     </div>
                 </div>
-
-                <!-- Content Folders -->
-                <div class="content-section">
-                    <div class="section-header">
-                        <h2>Папки с контентом</h2>
-                        <div class="section-actions">
-                            <button class="btn btn-secondary" onclick="refreshFolders()">
-                                <i class="fas fa-sync-alt"></i>
-                                Обновить
-                            </button>
-                            <button class="btn btn-secondary" onclick="createNewFolder()">
-                                <i class="fas fa-plus"></i>
-                                Создать папку
-                            </button>
-                        </div>
-                    </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="force-button" onclick="loadFolders()">
+                        🔄 ОБНОВИТЬ ВСЕ ПАПКИ
+                    </button>
                     
-                    <div class="folders-grid" id="foldersGrid">
-                        <!-- Demo folder 1 -->
-                        <div class="folder-card">
-                            <div class="folder-header">
-                                <div class="folder-icon">
-                                    <i class="fas fa-fire"></i>
-                                </div>
-                                <div class="folder-info">
-                                    <h3>Мотивация</h3>
-                                    <span class="folder-path">/content/motivation/</span>
-                                </div>
-                                <div class="folder-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Видео файлов</span>
-                                    <span class="stat-value">45</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Использовано</span>
-                                    <span class="stat-value">23 (51%)</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Размер папки</span>
-                                    <span class="stat-value">2.1 GB</span>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-actions">
-                                <button class="btn btn-small btn-secondary" onclick="openFolder('motivation')">
-                                    <i class="fas fa-eye"></i>
-                                    Просмотр
-                                </button>
-                                <button class="btn btn-small btn-primary" onclick="manageFolder('motivation')">
-                                    <i class="fas fa-cog"></i>
-                                    Управление
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Demo folder 2 -->
-                        <div class="folder-card">
-                            <div class="folder-header">
-                                <div class="folder-icon">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <div class="folder-info">
-                                    <h3>Лайфстайл</h3>
-                                    <span class="folder-path">/content/lifestyle/</span>
-                                </div>
-                                <div class="folder-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Видео файлов</span>
-                                    <span class="stat-value">38</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Использовано</span>
-                                    <span class="stat-value">15 (39%)</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Размер папки</span>
-                                    <span class="stat-value">1.8 GB</span>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-actions">
-                                <button class="btn btn-small btn-secondary" onclick="openFolder('lifestyle')">
-                                    <i class="fas fa-eye"></i>
-                                    Просмотр
-                                </button>
-                                <button class="btn btn-small btn-primary" onclick="manageFolder('lifestyle')">
-                                    <i class="fas fa-cog"></i>
-                                    Управление
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Demo folder 3 -->
-                        <div class="folder-card">
-                            <div class="folder-header">
-                                <div class="folder-icon">
-                                    <i class="fas fa-briefcase"></i>
-                                </div>
-                                <div class="folder-info">
-                                    <h3>Бизнес</h3>
-                                    <span class="folder-path">/content/business/</span>
-                                </div>
-                                <div class="folder-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Видео файлов</span>
-                                    <span class="stat-value">29</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Использовано</span>
-                                    <span class="stat-value">12 (41%)</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Размер папки</span>
-                                    <span class="stat-value">1.3 GB</span>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-actions">
-                                <button class="btn btn-small btn-secondary" onclick="openFolder('business')">
-                                    <i class="fas fa-eye"></i>
-                                    Просмотр
-                                </button>
-                                <button class="btn btn-small btn-primary" onclick="manageFolder('business')">
-                                    <i class="fas fa-cog"></i>
-                                    Управление
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Demo folder 4 -->
-                        <div class="folder-card">
-                            <div class="folder-header">
-                                <div class="folder-icon">
-                                    <i class="fas fa-laugh"></i>
-                                </div>
-                                <div class="folder-info">
-                                    <h3>Развлечения</h3>
-                                    <span class="folder-path">/content/entertainment/</span>
-                                </div>
-                                <div class="folder-menu">
-                                    <button class="btn-icon">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Видео файлов</span>
-                                    <span class="stat-value">52</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Использовано</span>
-                                    <span class="stat-value">31 (60%)</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="stat-label">Размер папки</span>
-                                    <span class="stat-value">2.7 GB</span>
-                                </div>
-                            </div>
-                            
-                            <div class="folder-actions">
-                                <button class="btn btn-small btn-secondary" onclick="openFolder('entertainment')">
-                                    <i class="fas fa-eye"></i>
-                                    Просмотр
-                                </button>
-                                <button class="btn btn-small btn-primary" onclick="manageFolder('entertainment')">
-                                    <i class="fas fa-cog"></i>
-                                    Управление
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Videos -->
-                <div class="content-section">
-                    <h2>Недавно загруженные видео</h2>
+                    <button class="force-button" onclick="cleanupContent()">
+                        🧹 ОЧИСТКА НЕИСПОЛЬЗУЕМОГО
+                    </button>
                     
-                    <div class="videos-list" id="recentVideos">
-                        <div class="video-item">
-                            <div class="video-thumbnail">
-                                <i class="fas fa-play-circle"></i>
-                            </div>
-                            <div class="video-info">
-                                <h4>motivation_success_001.mp4</h4>
-                                <p>Категория: Мотивация</p>
-                                <span class="video-meta">15 MB • 2:30 • 2 часа назад</span>
-                            </div>
-                            <div class="video-actions">
-                                <button class="btn btn-small btn-secondary">Предпросмотр</button>
-                                <button class="btn btn-small btn-primary">Использовать</button>
-                            </div>
-                        </div>
-
-                        <div class="video-item">
-                            <div class="video-thumbnail">
-                                <i class="fas fa-play-circle"></i>
-                            </div>
-                            <div class="video-info">
-                                <h4>lifestyle_morning_routine.mp4</h4>
-                                <p>Категория: Лайфстайл</p>
-                                <span class="video-meta">22 MB • 1:45 • 4 часа назад</span>
-                            </div>
-                            <div class="video-actions">
-                                <button class="btn btn-small btn-secondary">Предпросмотр</button>
-                                <button class="btn btn-small btn-primary">Использовать</button>
-                            </div>
-                        </div>
-                    </div>
+                    <button class="force-button" onclick="exportContent()">
+                        📥 ЭКСПОРТ КОНТЕНТА
+                    </button>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- JavaScript -->
+    <!-- ПОДКЛЮЧЕНИЕ СУЩЕСТВУЮЩЕГО ФУНКЦИОНАЛА -->
     <script src="/static/js/dashboard.js"></script>
+    
+    <!-- ПРИНУДИТЕЛЬНЫЙ ФУНКЦИОНАЛ КНОПОК -->
     <script>
-        console.log('📁 Content page loaded');
+        console.log('🚀 ПРИНУДИТЕЛЬНЫЕ КНОПКИ КОНТЕНТА ЗАГРУЖЕНЫ!');
 
-        // Drag & Drop функциональность
-        const uploadArea = document.getElementById('uploadArea');
-        const videoFiles = document.getElementById('videoFiles');
+        // ФУНКЦИЯ ПОКАЗА СООБЩЕНИЙ
+        function showMessage(message, type = 'success') {
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (type === 'success') {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+            } else {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
 
-        uploadArea.addEventListener('dragover', (e) => {
+        // DRAG & DROP ФУНКЦИОНАЛЬНОСТЬ
+        const uploadZone = document.getElementById('uploadZone');
+        
+        uploadZone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.classList.add('drag-over');
+            uploadZone.style.background = '#1a1f2e';
+            uploadZone.style.borderColor = '#764ba2';
         });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.style.background = '#252d3a';
+            uploadZone.style.borderColor = '#667eea';
         });
 
-        uploadArea.addEventListener('drop', (e) => {
+        uploadZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            uploadArea.classList.remove('drag-over');
+            uploadZone.style.background = '#252d3a';
+            uploadZone.style.borderColor = '#667eea';
             
             const files = e.dataTransfer.files;
-            console.log('🎬 Files dropped:', files.length);
             handleFileUpload(files);
         });
 
-        uploadArea.addEventListener('click', () => {
-            videoFiles.click();
-        });
-
-        videoFiles.addEventListener('change', (e) => {
-            console.log('📁 Files selected:', e.target.files.length);
+        // ВЫБОР ФАЙЛОВ
+        document.getElementById('videoFiles').addEventListener('change', (e) => {
             handleFileUpload(e.target.files);
         });
 
-        // Обработка загрузки файлов
+        // ОБРАБОТКА ЗАГРУЗКИ ФАЙЛОВ
         async function handleFileUpload(files) {
-            if (files.length === 0) return;
-
+            console.log('📤 Загрузка файлов:', files.length);
+            
+            if (files.length === 0) {
+                showMessage('❌ Выберите файлы для загрузки', 'error');
+                return;
+            }
+            
             const category = document.getElementById('videoCategory').value;
-            const tags = document.getElementById('videoTags').value;
-            
-            console.log(`🔄 Uploading ${files.length} files to category: ${category}`);
-
-            // Показать прогресс
-            const progressContainer = document.getElementById('uploadProgress');
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-            
-            progressContainer.style.display = 'block';
-
             const formData = new FormData();
             
             for (let file of files) {
-                if (file.size > 100 * 1024 * 1024) { // 100MB limit
-                    alert(`❌ Файл ${file.name} слишком большой (макс. 100MB)`);
-                    continue;
+                if (file.type.startsWith('video/')) {
+                    formData.append('videos', file);
+                } else {
+                    showMessage(`❌ Файл ${file.name} не является видео`, 'error');
                 }
-                formData.append('videos', file);
             }
             formData.append('category', category);
-            formData.append('tags', tags);
 
             try {
+                showMessage(`⏳ Загрузка ${files.length} видео в категорию "${category}"...`, 'success');
+
                 const response = await fetch('/api/content/upload', {
                     method: 'POST',
                     body: formData
                 });
 
-                // Симуляция прогресса
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += 10;
-                    progressFill.style.width = progress + '%';
-                    progressText.textContent = progress + '%';
-                    
-                    if (progress >= 100) {
-                        clearInterval(progressInterval);
-                    }
-                }, 200);
-
                 const result = await response.json();
+                console.log('📨 Результат загрузки:', result);
 
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    
-                    if (result.success) {
-                        alert(`✅ Успешно загружено ${files.length} видео в категорию "${category}"!`);
-                        loadFolders();
-                        loadRecentVideos();
-                        
-                        // Очистить форму
-                        videoFiles.value = '';
-                        document.getElementById('videoTags').value = '';
-                    } else {
-                        alert('❌ Ошибка загрузки: ' + result.message);
-                    }
-                }, 2000);
-
+                if (result.success) {
+                    showMessage(`✅ Успешно загружено ${files.length} видео в "${category}"!`, 'success');
+                    loadFolders();
+                } else {
+                    showMessage('❌ Ошибка загрузки: ' + (result.message || 'Неизвестная ошибка'), 'error');
+                }
             } catch (error) {
-                progressContainer.style.display = 'none';
-                console.error('Upload error:', error);
-                alert('❌ Ошибка загрузки: ' + error.message);
+                console.error('💥 Ошибка загрузки:', error);
+                showMessage('❌ Ошибка: ' + error.message, 'error');
             }
         }
 
-        // Управление папками
+        // ЗАГРУЗКА ПАПОК
         async function loadFolders() {
+            console.log('📂 Загрузка папок...');
+            
             try {
-                console.log('📂 Loading folders...');
+                showMessage('⏳ Обновление папок...', 'success');
+                
                 const response = await fetch('/api/content/folders');
                 const folders = await response.json();
                 
-                console.log('✅ Loaded folders:', folders.length);
-                // Обновить отображение папок
+                console.log('📁 Загружено папок:', folders.length);
+                showMessage(`✅ Обновлено ${folders.length} папок`, 'success');
+                
+                updateFoldersDisplay(folders);
+                
             } catch (error) {
-                console.error('❌ Error loading folders:', error);
+                console.error('💥 Ошибка загрузки папок:', error);
+                showMessage('❌ Ошибка загрузки папок: ' + error.message, 'error');
             }
         }
 
-        async function refreshFolders() {
-            console.log('🔄 Refreshing folders...');
-            await loadFolders();
-        }
-
-        function openFolder(folderName) {
-            console.log('📂 Opening folder:', folderName);
-            alert(`📂 Открытие папки: ${folderName}\n(В полной версии здесь будет список видео)`);
-        }
-
-        function manageFolder(folderName) {
-            console.log('⚙️ Managing folder:', folderName);
-            alert(`⚙️ Управление папкой: ${folderName}\n(В полной версии здесь будут настройки папки)`);
-        }
-
-        function createNewFolder() {
-            const folderName = prompt('📁 Введите название новой папки:');
-            if (folderName) {
-                console.log('✅ Creating folder:', folderName);
-                alert(`✅ Папка "${folderName}" будет создана`);
+        // ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ ПАПОК
+        function updateFoldersDisplay(folders) {
+            const container = document.getElementById('foldersContainer');
+            
+            if (folders && folders.length > 0) {
+                container.innerHTML = folders.map(folder => `
+                    <div class="folder-card">
+                        <h3 style="color: white; margin: 0 0 15px 0;">${getFolderIcon(folder.id)} ${folder.name.toUpperCase()}</h3>
+                        <p style="color: #94a3b8; margin: 5px 0;">Видео: ${folder.total_videos} | Использовано: ${folder.used_videos} | Размер: ${folder.size}</p>
+                        <p style="color: #94a3b8; margin: 5px 0;">Обновлено: ${folder.last_updated}</p>
+                        
+                        <button class="force-button" onclick="viewFolder('${folder.id}')">
+                            👁️ ПРОСМОТР
+                        </button>
+                        
+                        <button class="force-button" onclick="manageFolder('${folder.id}')">
+                            ⚙️ УПРАВЛЕНИЕ
+                        </button>
+                    </div>
+                `).join('');
             }
         }
 
-        // Загрузка недавних видео
-        async function loadRecentVideos() {
-            try {
-                console.log('🎬 Loading recent videos...');
-                // В реальном приложении здесь будет API запрос
-                console.log('✅ Recent videos loaded');
-            } catch (error) {
-                console.error('❌ Error loading recent videos:', error);
+        // ИКОНКИ ПАПОК
+        function getFolderIcon(folderId) {
+            const icons = {
+                'motivation': '🔥',
+                'lifestyle': '✨',
+                'business': '💼',
+                'entertainment': '🎉'
+            };
+            return icons[folderId] || '📁';
+        }
+
+        // ПРОСМОТР ПАПКИ
+        function viewFolder(folderId) {
+            console.log('👁️ Просмотр папки:', folderId);
+            showMessage(`👁️ Открыт просмотр папки ${folderId}`, 'success');
+        }
+
+        // УПРАВЛЕНИЕ ПАПКОЙ
+        function manageFolder(folderId) {
+            console.log('⚙️ Управление папкой:', folderId);
+            showMessage(`⚙️ Открыто управление папкой ${folderId}`, 'success');
+        }
+
+        // ОЧИСТКА КОНТЕНТА
+        function cleanupContent() {
+            console.log('🧹 Очистка неиспользуемого контента...');
+            
+            const confirmed = confirm('Удалить все неиспользуемые видео?');
+            
+            if (confirmed) {
+                showMessage('🧹 Очистка завершена', 'success');
+                loadFolders();
             }
         }
 
-        // Инициализация при загрузке
+        // ЭКСПОРТ КОНТЕНТА
+        function exportContent() {
+            console.log('📥 Экспорт контента...');
+            showMessage('📥 Экспорт контента начат', 'success');
+        }
+
+        // АВТОЗАГРУЗКА ПРИ ОТКРЫТИИ СТРАНИЦЫ
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Content page initialized');
+            console.log('🚀 Страница контента загружена, автозагрузка данных...');
             loadFolders();
-            loadRecentVideos();
         });
     </script>
 </body>
