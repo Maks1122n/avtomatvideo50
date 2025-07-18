@@ -40,11 +40,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Шаблоны - ПРАВИЛЬНЫЙ ПУТЬ
-templates = Jinja2Templates(directory="templates")
+# Шаблоны - ОТНОСИТЕЛЬНЫЙ ПУТЬ ОТ backend/
+templates = Jinja2Templates(directory="../templates")
 
-# Статические файлы - ПРАВИЛЬНЫЙ ПУТЬ  
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Статические файлы - ОТНОСИТЕЛЬНЫЙ ПУТЬ ОТ backend/  
+app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 # Подключение API роутеров ТОЛЬКО если доступны
 if API_AVAILABLE:
