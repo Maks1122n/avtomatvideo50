@@ -14,13 +14,16 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование всего приложения
+# Копирование приложения
 COPY backend/ ./
-COPY frontend/ ./frontend/
-COPY content/ ./content/
 
 # Создание необходимых директорий
-RUN mkdir -p logs proxies uploads
+RUN mkdir -p content/motivation content/lifestyle content/business content/entertainment
+RUN mkdir -p logs proxies uploads frontend
+
+# Копирование frontend и content
+COPY frontend/ ./frontend/
+COPY content/ ./content/
 
 # Установка прав доступа
 RUN chmod -R 755 .
