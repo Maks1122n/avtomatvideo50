@@ -3,768 +3,2172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaFlux Hub - Instagram Reels Automation</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-    
-    <!-- ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ МОДАЛЬНЫХ ОКОН -->
+    <title>MediaFlux Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Модальные окна */
-        .modal {
+        /* CSS Variables */
+        :root {
+            /* Основа - темная тема */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #161616;
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            
+            /* Градиенты для акцентов */
+            --gradient-blue: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-green: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --gradient-purple: linear-gradient(135deg, #9f7aea 0%, #ed64a6 100%);
+            --gradient-orange: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            --gradient-cyber: linear-gradient(135deg, #00f5ff 0%, #0077ff 50%, #8000ff 100%);
+            --gradient-red: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            
+            /* Статусы */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* Текст */
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1a1;
+            --text-muted: #666666;
+            --text-accent: #00f5ff;
+            
+            /* Границы и тени */
+            --border-color: #2a2a2a;
+            --border-accent: #333333;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.6);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.8);
+            --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.9);
+            --shadow-glow: 0 0 30px rgba(0, 245, 255, 0.3);
+            --shadow-glow-purple: 0 0 30px rgba(159, 122, 234, 0.4);
+            --shadow-glow-green: 0 0 20px rgba(16, 185, 129, 0.4);
+            --shadow-glow-red: 0 0 20px rgba(239, 68, 68, 0.4);
+            
+            /* Размеры */
+            --sidebar-width: 280px;
+            --border-radius: 16px;
+            --border-radius-lg: 24px;
+            --border-radius-xl: 32px;
+            
+            /* Шрифты */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            
+            /* Анимации */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 245, 255, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            animation: bgShift 20s ease-in-out infinite;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            overflow-y: auto;
+            transition: var(--transition-smooth);
+            padding: 2rem 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 10px rgba(0, 245, 255, 0.5));
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition-smooth);
+            position: relative;
+            font-weight: 500;
+            font-size: 0.9rem;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--gradient-cyber);
+            opacity: 0;
+            transition: var(--transition-smooth);
+            z-index: -1;
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-accent);
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-accent);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            right: -1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: var(--gradient-cyber);
+            border-radius: 2px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-icon {
+            font-size: 1.125rem;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            background: var(--gradient-purple);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            margin-left: auto;
+            min-width: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-glow-purple);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem 3rem;
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+
+        /* Page Sections */
+        .page-section {
             display: none;
-            justify-content: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .content-header {
+            margin-bottom: 3rem;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
             align-items: center;
         }
 
-        .modal.show {
-            display: flex;
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
-        .modal-content {
-            background: var(--bg-secondary);
-            padding: 30px;
-            border-radius: 15px;
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: var(--transition-smooth);
+            z-index: 0;
+        }
+
+        .action-btn.blue-gradient::before {
+            background: var(--gradient-blue);
+        }
+
+        .action-btn.green-gradient::before {
+            background: var(--gradient-green);
+        }
+
+        .action-btn.orange-gradient::before {
+            background: var(--gradient-orange);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: transparent;
+        }
+
+        .action-btn:hover::before {
+            opacity: 0.1;
+        }
+
+        .action-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 2.5rem;
+            z-index: 1;
+            position: relative;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .btn-content {
+            flex: 1;
+            z-index: 1;
+            position: relative;
+        }
+
+        .btn-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .btn-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .btn-arrow {
+            font-size: 1.5rem;
+            color: var(--text-accent);
+            z-index: 1;
+            position: relative;
+            transition: var(--transition-fast);
+        }
+
+        .action-btn:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-cyber);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-accent);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        .stat-change-icon {
+            font-size: 0.8rem;
+        }
+
+        /* Activity Feed */
+        .activity-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-fast);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: var(--bg-glass);
+            margin: 0 -1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            background: var(--bg-tertiary);
+            color: var(--text-accent);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Accounts Grid */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .account-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .account-card.status-active::before {
+            background: var(--gradient-green);
+        }
+
+        .account-card.status-pending::before {
+            background: var(--gradient-orange);
+        }
+
+        .account-card.status-error::before {
+            background: var(--gradient-red);
+        }
+
+        .account-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-accent);
+        }
+
+        .account-card:hover::before {
+            opacity: 1;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .account-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            position: relative;
+            box-shadow: var(--shadow-glow-purple);
+        }
+
+        .account-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .account-username {
+            color: var(--text-accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .account-status {
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .account-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            box-shadow: var(--shadow-glow-green);
+        }
+
+        .account-status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .account-status.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            box-shadow: var(--shadow-glow-red);
+        }
+
+        .account-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .account-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        /* Upload Zone */
+        .upload-section {
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-cyber);
+            opacity: 0;
+            transition: var(--transition-smooth);
+            z-index: 0;
+        }
+
+        .upload-section.dragover {
+            border-color: var(--text-accent);
+            background: var(--bg-glass);
+            transform: scale(1.02);
+        }
+
+        .upload-section.dragover::before {
+            opacity: 0.05;
+        }
+
+        .upload-section:hover {
+            border-color: var(--border-accent);
+            background: var(--bg-glass);
+        }
+
+        .upload-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upload-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .upload-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .upload-button {
+            background: var(--gradient-blue);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-md);
+            margin-right: 1rem;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .category-section {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .category-section label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .category-select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Folder Grid */
+        .folders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .folder-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .folder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-purple);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .folder-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border-accent);
+        }
+
+        .folder-card:hover::before {
+            opacity: 1;
+        }
+
+        .folder-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .folder-icon {
+            font-size: 2rem;
+            background: var(--gradient-purple);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .folder-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .folder-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .folder-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .folder-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Calendar */
+        .calendar-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .calendar-day.today {
+            background: var(--bg-glass);
+            border: 2px solid var(--text-accent);
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .scheduled-post {
+            background: var(--gradient-blue);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* Tasks List */
+        .tasks-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .task-status.pending {
+            background: var(--gradient-orange);
+            color: white;
+        }
+
+        .task-status.scheduled {
+            background: var(--gradient-blue);
+            color: white;
+        }
+
+        .task-status.completed {
+            background: var(--gradient-green);
+            color: white;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .task-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .task-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Charts placeholder */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-blue);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-glass);
+            border-color: var(--border-accent);
+        }
+
+        .btn-danger {
+            background: var(--gradient-red);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--border-radius-xl);
             width: 90%;
             max-width: 500px;
-            position: relative;
-            border: 2px solid var(--primary);
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.95);
+            transition: var(--transition-smooth);
         }
 
-        .close {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            font-size: 24px;
-            color: var(--text-secondary);
-            cursor: pointer;
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
             background: none;
             border: none;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close:hover {
-            color: var(--primary);
-            background: rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
             border-radius: 50%;
+            transition: var(--transition-fast);
         }
 
-        .modal h2 {
-            color: var(--primary);
-            margin: 0 0 20px 0;
-            padding-right: 40px;
+        .modal-close:hover {
+            background: var(--bg-glass);
+            color: var(--text-primary);
         }
 
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 1rem 2rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Forms */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
             color: var(--text-primary);
-            font-weight: 600;
         }
 
         .form-group input,
-        .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 25px;
-        }
-
-        .form-actions button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .form-actions button[type="submit"],
-        .form-actions .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .form-actions button[type="button"],
-        .form-actions .btn-secondary {
+            padding: 0.875rem 1rem;
             background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
             color: var(--text-primary);
-            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
         }
 
-        .form-actions button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--text-accent);
+            box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.1);
         }
 
-        .upload-area {
-            border: 2px dashed var(--primary);
-            padding: 40px;
-            text-align: center;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            background: var(--bg-primary);
+        .form-group input::placeholder {
+            color: var(--text-muted);
         }
 
-        .upload-area:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--accent);
-        }
-
-        .upload-area p {
-            margin: 0;
-            color: var(--text-secondary);
-        }
-
-        /* Уведомления */
-        .notification {
+        /* Notifications */
+        .notifications-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
+            top: 2rem;
+            right: 2rem;
             z-index: 2000;
-            opacity: 0;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-lg);
             transform: translateX(100%);
-            transition: all 0.3s ease;
+            opacity: 0;
+            transition: var(--transition-smooth);
         }
 
         .notification.show {
-            opacity: 1;
             transform: translateX(0);
+            opacity: 1;
         }
 
         .notification.success {
-            background: #10b981;
+            border-left: 4px solid var(--success);
         }
 
         .notification.error {
-            background: #ef4444;
+            border-left: 4px solid var(--error);
         }
 
         .notification.info {
-            background: #3b82f6;
+            border-left: 4px solid var(--info);
         }
 
-        /* Сделать кнопки действий ТОЧНО рабочими */
-        .action-btn {
-            cursor: pointer !important;
-            pointer-events: all !important;
-            user-select: none !important;
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+                height: 100vh;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .modal {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .accounts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .folders-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .notifications-container {
+                left: 1rem;
+                right: 1rem;
+                max-width: none;
+            }
+
+            .account-actions {
+                flex-direction: column;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-day {
+                min-height: 60px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-shimmer {
+            background: linear-gradient(90deg, 
+                var(--bg-tertiary) 25%, 
+                var(--bg-secondary) 50%, 
+                var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Enhanced Hover Effects */
+        .action-btn:hover .btn-icon {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+        /* Pulse Animation for Live Data */
+        .stat-value {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .account-status.active {
+            animation: pulse-green 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: var(--shadow-glow-green); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.6); }
         }
     </style>
 </head>
 <body>
-    <!-- Уведомления -->
-    <div id="notification" class="notification"></div>
-
     <div class="dashboard">
-        <!-- Sidebar -->
+        <!-- ОБЯЗАТЕЛЬНАЯ НАВИГАЦИЯ -->
         <nav class="sidebar">
             <div class="logo">
                 <span class="logo-icon">📱</span>
                 <span class="logo-text">MediaFlux Hub</span>
             </div>
-            
             <ul class="nav-menu">
-                <li>
-                    <a href="/" class="nav-link active">
-                        <span class="nav-icon">📊</span>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="/accounts" class="nav-link">
-                        <span class="nav-icon">👥</span>
-                        Аккаунты
-                        <span class="nav-badge" id="accountsCount">0</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/content" class="nav-link">
-                        <span class="nav-icon">📁</span>
-                        Контент
-                        <span class="nav-badge" id="contentCount">156</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/schedule" class="nav-link">
-                        <span class="nav-icon">📅</span>
-                        Планировщик
-                    </a>
-                </li>
-                <li>
-                    <a href="/analytics" class="nav-link">
-                        <span class="nav-icon">📈</span>
-                        Аналитика
-                    </a>
-                </li>
-                <li>
-                    <a href="/proxies" class="nav-link">
-                        <span class="nav-icon">🛡️</span>
-                        Прокси
-                        <span class="nav-badge">—</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/settings" class="nav-link">
-                        <span class="nav-icon">⚙️</span>
-                        Настройки
-                    </a>
-                </li>
+                <li><a href="/" class="nav-link active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</a></li>
+                <li><a href="/accounts" class="nav-link" data-page="accounts"><span class="nav-icon">👥</span>Аккаунты<span class="nav-badge">3</span></a></li>
+                <li><a href="/content" class="nav-link" data-page="content"><span class="nav-icon">📁</span>Контент<span class="nav-badge">156</span></a></li>
+                <li><a href="/schedule" class="nav-link" data-page="schedule"><span class="nav-icon">📅</span>Планировщик</a></li>
+                <li><a href="/analytics" class="nav-link" data-page="analytics"><span class="nav-icon">📈</span>Аналитика</a></li>
+                <li><a href="/proxies" class="nav-link" data-page="proxies"><span class="nav-icon">🛡️</span>Прокси<span class="nav-badge">—</span></a></li>
+                <li><a href="/settings" class="nav-link" data-page="settings"><span class="nav-icon">⚙️</span>Настройки</a></li>
             </ul>
         </nav>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="page-header">
-                <div class="header-content">
-                    <h1>Dashboard</h1>
-                    <nav class="breadcrumb">
-                        <span>Главная</span> / <span>Dashboard</span>
-                    </nav>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="start-automation">
-                        <span class="btn-icon">▶️</span>
-                        Запустить автоматизацию
-                    </button>
-                    <div class="user-profile">
-                        <span class="user-icon">👤</span>
-                        <span class="user-name">Administrator</span>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="activeAccounts">0</div>
-                        <div class="stat-label">Активных аккаунтов</div>
-                        <div class="stat-change">+5 за сегодня</div>
+        
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
+        <div class="main-content">
+            <!-- DASHBOARD PAGE -->
+            <div id="dashboard" class="page-section active">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Центр управления автоматизацией Instagram Reels</p>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">📤</div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="postsToday">0</div>
-                        <div class="stat-label">Опубликовано сегодня</div>
-                        <div class="stat-change">+12 за сегодня</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon">⏰</div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="scheduledPosts">0</div>
-                        <div class="stat-label">Запланировано</div>
-                        <div class="stat-change">На завтра</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon">👁️</div>
-                    <div class="stat-content">
-                        <div class="stat-number" id="totalViews">0</div>
-                        <div class="stat-label">Просмотров</div>
-                        <div class="stat-change">+2.5K за сегодня</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="content-section">
-                <h2>Быстрые действия</h2>
+                <!-- Quick Actions -->
                 <div class="quick-actions">
-                    <a href="/accounts" class="action-btn">
-                        <span class="btn-icon">➕</span>
-                        <span class="btn-text">Добавить аккаунт</span>
-                    </a>
-                    
-                    <a href="/content" class="action-btn">
+                    <button class="action-btn blue-gradient" onclick="openAddAccountModal()">
+                        <span class="btn-icon">👤</span>
+                        <div class="btn-content">
+                            <div class="btn-title">Добавить аккаунт</div>
+                            <div class="btn-subtitle">Новый социальный профиль</div>
+                        </div>
+                        <span class="btn-arrow">→</span>
+                    </button>
+
+                    <button class="action-btn green-gradient" onclick="openContentUpload()">
                         <span class="btn-icon">📤</span>
-                        <span class="btn-text">Загрузить контент</span>
-                    </a>
-                    
-                    <a href="/schedule" class="action-btn">
-                        <span class="btn-icon">📅</span>
-                        <span class="btn-text">Создать расписание</span>
-                    </a>
+                        <div class="btn-content">
+                            <div class="btn-title">Загрузить контент</div>
+                            <div class="btn-subtitle">Видео и изображения</div>
+                        </div>
+                        <span class="btn-arrow">→</span>
+                    </button>
+
+                    <button class="action-btn orange-gradient" onclick="openTargetingSettings()">
+                        <span class="btn-icon">🎯</span>
+                        <div class="btn-content">
+                            <div class="btn-title">Настроить таргетинг</div>
+                            <div class="btn-subtitle">Аудитория и расписание</div>
+                        </div>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Активные аккаунты</span>
+                            <span class="stat-icon">👥</span>
+                        </div>
+                        <div class="stat-value" id="accounts-count">3</div>
+                        <div class="stat-change positive">
+                            <span class="stat-change-icon">↗</span>
+                            <span>+1 за неделю</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Опубликовано сегодня</span>
+                            <span class="stat-icon">📤</span>
+                        </div>
+                        <div class="stat-value" id="posts-published">12</div>
+                        <div class="stat-change positive">
+                            <span class="stat-change-icon">↗</span>
+                            <span>+8% больше вчера</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Общий охват</span>
+                            <span class="stat-icon">📈</span>
+                        </div>
+                        <div class="stat-value" id="unique-views">24.8K</div>
+                        <div class="stat-change positive">
+                            <span class="stat-change-icon">↗</span>
+                            <span>+15.3% за неделю</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Файлов в очереди</span>
+                            <span class="stat-icon">📁</span>
+                        </div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-change positive">
+                            <span class="stat-change-icon">↗</span>
+                            <span>+23 новых</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="activity-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Последняя активность</h2>
+                    </div>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">📤</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Пост опубликован в @lifestyle_blog</div>
+                                <div class="activity-description">Видео "Утренняя рутина" успешно загружено</div>
+                            </div>
+                            <div class="activity-time">2 мин назад</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">👤</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Новый аккаунт подключен</div>
+                                <div class="activity-description">@business_tips успешно добавлен в систему</div>
+                            </div>
+                            <div class="activity-time">15 мин назад</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">📊</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Аналитика обновлена</div>
+                                <div class="activity-description">Статистика за вчера готова к просмотру</div>
+                            </div>
+                            <div class="activity-time">1 час назад</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">📁</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Контент обработан</div>
+                                <div class="activity-description">15 новых видео добавлено в папку "Мотивация"</div>
+                            </div>
+                            <div class="activity-time">2 часа назад</div>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Activity Feed -->
-            <div class="activity-section">
-                <div class="section-header">
-                    <h2>Активность системы</h2>
-                    <button class="refresh-btn" onclick="loadRecentActivity()">🔄</button>
+            <!-- ACCOUNTS PAGE -->
+            <div id="accounts" class="page-section">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Аккаунты</h1>
+                        <p class="page-subtitle">Управление Instagram аккаунтами и их настройками</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="refreshAccounts()">
+                            <span>🔄</span>
+                            Обновить
+                        </button>
+                        <button class="btn btn-primary" onclick="openAddAccountModal()">
+                            <span>➕</span>
+                            Добавить аккаунт
+                        </button>
+                    </div>
                 </div>
-                <div class="activity-feed" id="activityFeed">
-                    <div class="activity-item">
-                        <div class="activity-icon">📤</div>
-                        <div class="activity-content">
-                            <div class="activity-title">Загрузка данных...</div>
-                            <div class="activity-time">Сейчас</div>
+
+                <!-- Accounts Grid -->
+                <div class="accounts-grid" id="accounts-list">
+                    <!-- Account Card 1 -->
+                    <div class="account-card status-active">
+                        <div class="account-header">
+                            <div class="account-avatar">LB</div>
+                            <div class="account-info">
+                                <h3>Lifestyle Blog</h3>
+                                <div class="account-username">@lifestyle_blog</div>
+                            </div>
+                            <div class="account-status active">Активен</div>
                         </div>
-                        <div class="activity-status status-info">⏳</div>
+                        
+                        <div class="account-stats">
+                            <div class="stat-item">
+                                <div class="value">12.5K</div>
+                                <div class="label">Подписчики</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">87</div>
+                                <div class="label">Посты</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">3.2%</div>
+                                <div class="label">Engagement</div>
+                            </div>
+                        </div>
+                        
+                        <div class="account-actions">
+                            <button class="btn btn-primary" onclick="testAccount(1)">
+                                🧪 Тест
+                            </button>
+                            <button class="btn btn-secondary" onclick="editAccount(1)">
+                                ✏️ Редактировать
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteAccount(1)">
+                                🗑️ Удалить
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account Card 2 -->
+                    <div class="account-card status-active">
+                        <div class="account-header">
+                            <div class="account-avatar">BT</div>
+                            <div class="account-info">
+                                <h3>Business Tips</h3>
+                                <div class="account-username">@business_tips</div>
+                            </div>
+                            <div class="account-status active">Активен</div>
+                        </div>
+                        
+                        <div class="account-stats">
+                            <div class="stat-item">
+                                <div class="value">8.7K</div>
+                                <div class="label">Подписчики</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">124</div>
+                                <div class="label">Посты</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">4.1%</div>
+                                <div class="label">Engagement</div>
+                            </div>
+                        </div>
+                        
+                        <div class="account-actions">
+                            <button class="btn btn-primary" onclick="testAccount(2)">
+                                🧪 Тест
+                            </button>
+                            <button class="btn btn-secondary" onclick="editAccount(2)">
+                                ✏️ Редактировать
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteAccount(2)">
+                                🗑️ Удалить
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account Card 3 -->
+                    <div class="account-card status-pending">
+                        <div class="account-header">
+                            <div class="account-avatar">MD</div>
+                            <div class="account-info">
+                                <h3>Motivation Daily</h3>
+                                <div class="account-username">@motivation_daily</div>
+                            </div>
+                            <div class="account-status pending">Ожидание</div>
+                        </div>
+                        
+                        <div class="account-stats">
+                            <div class="stat-item">
+                                <div class="value">—</div>
+                                <div class="label">Подписчики</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">—</div>
+                                <div class="label">Посты</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">—</div>
+                                <div class="label">Engagement</div>
+                            </div>
+                        </div>
+                        
+                        <div class="account-actions">
+                            <button class="btn btn-primary" onclick="testAccount(3)">
+                                🧪 Тест
+                            </button>
+                            <button class="btn btn-secondary" onclick="editAccount(3)">
+                                ✏️ Редактировать
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteAccount(3)">
+                                🗑️ Удалить
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
+
+            <!-- CONTENT PAGE -->
+            <div id="content" class="page-section">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Контент</h1>
+                        <p class="page-subtitle">Управление видео файлами и контентом для публикации</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="cleanupContent()">
+                            🧹 Очистка
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportContent()">
+                            📤 Экспорт
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="upload-section" id="uploadZone">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-title">Загрузите ваши видео</div>
+                        <div class="upload-subtitle">Перетащите файлы сюда или выберите с компьютера</div>
+                        <button class="upload-button" onclick="handleFileUpload()">
+                            Выбрать файлы
+                        </button>
+                        <input type="file" id="videoFiles" class="file-input" multiple accept="video/mp4,video/mov,video/avi">
+                        <div class="category-section">
+                            <label>Категория:</label>
+                            <select id="videoCategory" class="category-select">
+                                <option value="motivation">Мотивация</option>
+                                <option value="lifestyle">Лайфстайл</option>
+                                <option value="business">Бизнес</option>
+                                <option value="entertainment">Развлечения</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Folders Grid -->
+                <div class="folders-grid">
+                    <div class="folder-card" onclick="viewFolder('motivation')">
+                        <div class="folder-header">
+                            <div class="folder-icon">💪</div>
+                            <div class="folder-info">
+                                <h3>Мотивация</h3>
+                                <div class="folder-count">45 файлов</div>
+                            </div>
+                        </div>
+                        <div class="folder-stats">
+                            <div class="stat-item">
+                                <div class="value">2.1GB</div>
+                                <div class="label">Размер</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">12</div>
+                                <div class="label">Опубликовано</div>
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <button class="btn btn-primary" onclick="viewFolder('motivation')">
+                                👁️ Просмотр
+                            </button>
+                            <button class="btn btn-secondary" onclick="manageFolder('motivation')">
+                                ⚙️ Управление
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="viewFolder('lifestyle')">
+                        <div class="folder-header">
+                            <div class="folder-icon">🌟</div>
+                            <div class="folder-info">
+                                <h3>Лайфстайл</h3>
+                                <div class="folder-count">67 файлов</div>
+                            </div>
+                        </div>
+                        <div class="folder-stats">
+                            <div class="stat-item">
+                                <div class="value">3.4GB</div>
+                                <div class="label">Размер</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">23</div>
+                                <div class="label">Опубликовано</div>
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <button class="btn btn-primary" onclick="viewFolder('lifestyle')">
+                                👁️ Просмотр
+                            </button>
+                            <button class="btn btn-secondary" onclick="manageFolder('lifestyle')">
+                                ⚙️ Управление
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="viewFolder('business')">
+                        <div class="folder-header">
+                            <div class="folder-icon">💼</div>
+                            <div class="folder-info">
+                                <h3>Бизнес</h3>
+                                <div class="folder-count">32 файла</div>
+                            </div>
+                        </div>
+                        <div class="folder-stats">
+                            <div class="stat-item">
+                                <div class="value">1.8GB</div>
+                                <div class="label">Размер</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">8</div>
+                                <div class="label">Опубликовано</div>
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <button class="btn btn-primary" onclick="viewFolder('business')">
+                                👁️ Просмотр
+                            </button>
+                            <button class="btn btn-secondary" onclick="manageFolder('business')">
+                                ⚙️ Управление
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" onclick="viewFolder('entertainment')">
+                        <div class="folder-header">
+                            <div class="folder-icon">🎬</div>
+                            <div class="folder-info">
+                                <h3>Развлечения</h3>
+                                <div class="folder-count">12 файлов</div>
+                            </div>
+                        </div>
+                        <div class="folder-stats">
+                            <div class="stat-item">
+                                <div class="value">890MB</div>
+                                <div class="label">Размер</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="value">3</div>
+                                <div class="label">Опубликовано</div>
+                            </div>
+                        </div>
+                        <div class="folder-actions">
+                            <button class="btn btn-primary" onclick="viewFolder('entertainment')">
+                                👁️ Просмотр
+                            </button>
+                            <button class="btn btn-secondary" onclick="manageFolder('entertainment')">
+                                ⚙️ Управление
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCHEDULE PAGE -->
+            <div id="schedule" class="page-section">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Планировщик</h1>
+                        <p class="page-subtitle">Управление расписанием публикаций и задачами</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="pauseScheduling()">
+                            ⏸️ Пауза
+                        </button>
+                        <button class="btn btn-primary" onclick="quickSchedule()">
+                            ⚡ Быстрое планирование
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calendar Section -->
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <h3 class="section-title">Календарь публикаций</h3>
+                        <div class="header-actions">
+                            <button class="btn btn-secondary">← Пред</button>
+                            <span style="margin: 0 1rem; font-weight: 600;">Январь 2025</span>
+                            <button class="btn btn-secondary">След →</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day">
+                            <div class="day-number">15</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-number">16</div>
+                            <div class="scheduled-post">Мотивация</div>
+                        </div>
+                        <div class="calendar-day today">
+                            <div class="day-number">17</div>
+                            <div class="scheduled-post">Лайфстайл</div>
+                            <div class="scheduled-post">Бизнес</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-number">18</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-number">19</div>
+                            <div class="scheduled-post">Развлечения</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-number">20</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-number">21</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Section -->
+                <div class="tasks-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Активные задачи</h3>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status scheduled">⏱</div>
+                        <div class="task-content">
+                            <div class="task-title">Публикация в @lifestyle_blog</div>
+                            <div class="task-description">Видео "Утренняя рутина" запланировано на 14:00</div>
+                        </div>
+                        <div class="task-time">Сегодня</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status pending">⏳</div>
+                        <div class="task-content">
+                            <div class="task-title">Обработка контента</div>
+                            <div class="task-description">15 видео в очереди на обработку</div>
+                        </div>
+                        <div class="task-time">В процессе</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status completed">✓</div>
+                        <div class="task-content">
+                            <div class="task-title">Аналитика собрана</div>
+                            <div class="task-description">Отчет за вчера готов к просмотру</div>
+                        </div>
+                        <div class="task-time">Завершено</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS PAGE -->
+            <div id="analytics" class="page-section">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Аналитика</h1>
+                        <p class="page-subtitle">Статистика и аналитика производительности</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <p>📊 Здесь будут графики и аналитика</p>
+                </div>
+            </div>
+
+            <!-- PROXIES PAGE -->
+            <div id="proxies" class="page-section">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Прокси</h1>
+                        <p class="page-subtitle">Управление прокси-серверами</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <p>🛡️ Здесь будет управление прокси</p>
+                </div>
+            </div>
+
+            <!-- SETTINGS PAGE -->
+            <div id="settings" class="page-section">
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title">Настройки</h1>
+                        <p class="page-subtitle">Конфигурация системы</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <p>⚙️ Здесь будут настройки системы</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- МОДАЛЬНЫЕ ОКНА -->
-
-    <!-- Модальное окно добавления аккаунта -->
-    <div id="addAccountModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('addAccountModal')">&times;</button>
-            <h2>Добавить Instagram аккаунт</h2>
-            
-            <form id="quickAddAccountForm">
-                <div class="form-group">
-                    <label>Instagram Username:</label>
-                    <input type="text" name="username" placeholder="@your_account" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Instagram Access Token:</label>
-                    <textarea name="access_token" placeholder="Вставьте ваш Instagram Graph API токен" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Instagram Account ID:</label>
-                    <input type="text" name="account_id" placeholder="1234567890123456" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Прокси (опционально):</label>
-                    <input type="text" name="proxy" placeholder="http://user:pass@ip:port">
-                </div>
-                
-                <div class="form-group">
-                    <label>Дневной лимит постов:</label>
-                    <select name="daily_limit">
-                        <option value="2">2 поста в день</option>
-                        <option value="5" selected>5 постов в день</option>
-                        <option value="8">8 постов в день</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="testQuickConnection()">
-                        Тест соединения
-                    </button>
-                    <button type="submit" class="btn-primary">
-                        Добавить аккаунт
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Модальное окно загрузки контента -->
-    <div id="uploadModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('uploadModal')">&times;</button>
-            <h2>Загрузить видео контент</h2>
-            
-            <div class="upload-area" onclick="document.getElementById('quickVideoFiles').click()">
-                <p>📤 Перетащите видео сюда или нажмите для выбора</p>
-                <input type="file" id="quickVideoFiles" multiple accept="video/*" style="display: none;">
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="add-account-modal">
+            <div class="modal-header">
+                <h3>Добавить Instagram аккаунт</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-            
-            <div class="form-group">
-                <label>Категория видео:</label>
-                <select id="quickVideoCategory">
-                    <option value="motivation">🔥 Мотивация</option>
-                    <option value="lifestyle">✨ Лайфстайл</option>
-                    <option value="business">💼 Бизнес</option>
-                    <option value="entertainment">🎉 Развлечения</option>
-                </select>
+            <div class="modal-body">
+                <form id="add-account-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" required placeholder="@username">
+                    </div>
+                    <div class="form-group">
+                        <label>Access Token</label>
+                        <input type="password" name="access_token" required placeholder="Instagram Graph API Token">
+                    </div>
+                    <div class="form-group">
+                        <label>Instagram Account ID</label>
+                        <input type="text" name="instagram_account_id" required placeholder="Account ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Дневной лимит постов</label>
+                        <input type="number" name="daily_limit" value="5" min="1" max="20">
+                    </div>
+                </form>
             </div>
-            
-            <div class="form-actions">
-                <button type="button" class="btn-secondary" onclick="closeModal('uploadModal')">
-                    Отмена
-                </button>
-                <button type="button" class="btn-primary" onclick="uploadQuickVideos()">
-                    Загрузить видео
-                </button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                <button type="submit" form="add-account-form" class="btn btn-primary">Добавить аккаунт</button>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно создания расписания -->
-    <div id="scheduleModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModal('scheduleModal')">&times;</button>
-            <h2>Создать расписание публикаций</h2>
-            
-            <form id="quickScheduleForm">
-                <div class="form-group">
-                    <label>Период планирования:</label>
-                    <select name="period">
-                        <option value="week">📅 На неделю (7 дней)</option>
-                        <option value="month">📆 На месяц (30 дней)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Количество постов в день:</label>
-                    <input type="number" name="posts_per_day" min="1" max="8" value="3">
-                </div>
-                
-                <div class="form-group">
-                    <label>Время начала публикаций:</label>
-                    <input type="time" name="start_time" value="09:00">
-                </div>
-                
-                <div class="form-group">
-                    <label>Время окончания публикаций:</label>
-                    <input type="time" name="end_time" value="22:00">
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('scheduleModal')">
-                        Отмена
-                    </button>
-                    <button type="submit" class="btn-primary">
-                        Создать расписание
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- УВЕДОМЛЕНИЯ -->
+    <div id="notifications-container" class="notifications-container"></div>
 
-    <!-- Scripts -->
-    <script src="/static/js/dashboard.js"></script>
-    
+    <!-- JAVASCRIPT -->
     <script>
-        console.log('🚀 Dashboard с модальными окнами загружен');
-
-        // Функции уведомлений
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
+        // JavaScript для переключения страниц
+        function showPage(pageId) {
+            // Скрыть все страницы
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
             
+            // Убрать активный класс с навигации
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Показать нужную страницу
+            document.getElementById(pageId).classList.add('active');
+            
+            // Добавить активный класс к навигации
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        }
+
+        // Обработка кликов по навигации
+        document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+
+        // ОБЯЗАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КНОПОК
+        window.openAddAccountModal = function() {
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+
+        window.openContentUpload = function() {
+            showPage('content');
+        }
+
+        window.openTargetingSettings = function() {
+            showPage('schedule');
+        }
+
+        window.refreshAccounts = function() {
+            showPage('accounts');
+            // Здесь будет API запрос
+            console.log('Обновление аккаунтов...');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('modal-overlay').classList.remove('show');
+        }
+
+        window.logout = function() {
+            if(confirm('Выйти из системы?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // ФУНКЦИИ ДЛЯ АККАУНТОВ
+        window.testAccount = function(accountId) {
+            console.log('Тестирование аккаунта:', accountId);
+            // Здесь будет API запрос для тестирования аккаунта
+        }
+
+        window.editAccount = function(accountId) {
+            console.log('Редактирование аккаунта:', accountId);
+            // Здесь будет открытие модального окна редактирования
+        }
+
+        window.deleteAccount = function(accountId) {
+            if(confirm('Удалить аккаунт?')) {
+                console.log('Удаление аккаунта:', accountId);
+                // Здесь будет API запрос для удаления аккаунта
+            }
+        }
+
+        // ФУНКЦИИ ДЛЯ КОНТЕНТА
+        window.handleFileUpload = function() {
+            document.getElementById('videoFiles').click();
+        }
+
+        window.cleanupContent = function() {
+            console.log('Очистка контента...');
+        }
+
+        window.exportContent = function() {
+            console.log('Экспорт контента...');
+        }
+
+        window.viewFolder = function(folderName) {
+            console.log('Просмотр папки:', folderName);
+        }
+
+        window.manageFolder = function(folderName) {
+            console.log('Управление папкой:', folderName);
+        }
+
+        // ФУНКЦИИ ДЛЯ ПЛАНИРОВЩИКА
+        window.pauseScheduling = function() {
+            console.log('Пауза планирования...');
+        }
+
+        window.quickSchedule = function() {
+            console.log('Быстрое планирование...');
+        }
+
+        // Обработка формы добавления аккаунта
+        document.getElementById('add-account-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const accountData = Object.fromEntries(formData);
+            console.log('Добавление аккаунта:', accountData);
+            
+            // Здесь будет API запрос
+            // После успешного добавления закрываем модальное окно
+            closeModal();
+            
+            // Показываем уведомление
+            showNotification('Аккаунт успешно добавлен!', 'success');
+        });
+
+        // Функция для показа уведомлений
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notifications-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            container.appendChild(notification);
+            
+            // Показываем уведомление
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Скрываем через 5 секунд
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 4000);
+                setTimeout(() => {
+                    container.removeChild(notification);
+                }, 300);
+            }, 5000);
         }
 
-        // Функции модальных окон
-        function showAddAccountModal() {
-            console.log('Открытие модального окна добавления аккаунта');
-            document.getElementById('addAccountModal').classList.add('show');
-        }
-
-        function showUploadModal() {
-            console.log('Открытие модального окна загрузки');
-            document.getElementById('uploadModal').classList.add('show');
-        }
-
-        function showScheduleModal() {
-            console.log('Открытие модального окна расписания');
-            document.getElementById('scheduleModal').classList.add('show');
-        }
-
-        function closeModal(modalId) {
-            console.log('Закрытие модального окна:', modalId);
-            document.getElementById(modalId).classList.remove('show');
-        }
-
-        // Закрытие модалов по клику вне них
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('show');
+        // Закрытие модального окна по клику на overlay
+        document.getElementById('modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
             }
-        }
+        });
 
-        // Форма добавления аккаунта
-        document.getElementById('quickAddAccountForm').addEventListener('submit', async function(e) {
+        // Закрытие модального окна по ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Drag & Drop для загрузки файлов
+        const uploadZone = document.getElementById('uploadZone');
+        
+        uploadZone.addEventListener('dragover', function(e) {
             e.preventDefault();
-            console.log('Отправка формы добавления аккаунта');
-            
-            const formData = new FormData(this);
-            const accountData = Object.fromEntries(formData);
-            
-            try {
-                showNotification('⏳ Добавление аккаунта...', 'info');
-                
-                const response = await fetch('/api/accounts', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(accountData)
-                });
-                
-                const result = await response.json();
-                console.log('Результат добавления аккаунта:', result);
-                
-                if (result.success) {
-                    showNotification('✅ Аккаунт успешно добавлен!', 'success');
-                    closeModal('addAccountModal');
-                    this.reset();
-                    // Обновить статистику
-                    loadDashboardData();
-                } else {
-                    showNotification('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'), 'error');
-                }
-            } catch (error) {
-                console.error('Ошибка добавления аккаунта:', error);
-                showNotification('❌ Ошибка соединения: ' + error.message, 'error');
-            }
+            this.classList.add('dragover');
         });
-
-        // Тест соединения
-        async function testQuickConnection() {
-            console.log('Тестирование соединения аккаунта');
-            
-            const form = document.getElementById('quickAddAccountForm');
-            const formData = new FormData(form);
-            const accountData = Object.fromEntries(formData);
-            
-            if (!accountData.username || !accountData.access_token) {
-                showNotification('❌ Введите username и access token для тестирования', 'error');
-                return;
-            }
-            
-            try {
-                showNotification('⏳ Проверка соединения...', 'info');
-                
-                const response = await fetch('/api/accounts/test', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(accountData)
-                });
-                
-                const result = await response.json();
-                console.log('Результат теста соединения:', result);
-                
-                if (result.success) {
-                    showNotification(`✅ Соединение успешно! Подписчики: ${result.account_info?.followers || 'N/A'}`, 'success');
-                } else {
-                    showNotification('❌ Ошибка соединения: ' + (result.message || 'Токен недействителен'), 'error');
-                }
-            } catch (error) {
-                console.error('Ошибка теста соединения:', error);
-                showNotification('❌ Ошибка: ' + error.message, 'error');
-            }
-        }
-
-        // Загрузка видео
-        document.getElementById('quickVideoFiles').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                uploadQuickVideos();
-            }
-        });
-
-        async function uploadQuickVideos() {
-            console.log('Загрузка видео файлов');
-            
-            const files = document.getElementById('quickVideoFiles').files;
-            const category = document.getElementById('quickVideoCategory').value;
-            
-            if (files.length === 0) {
-                showNotification('❌ Выберите файлы для загрузки', 'error');
-                return;
-            }
-            
-            const formData = new FormData();
-            for (let file of files) {
-                if (file.type.startsWith('video/')) {
-                    formData.append('videos', file);
-                } else {
-                    showNotification(`❌ Файл ${file.name} не является видео`, 'error');
-                    return;
-                }
-            }
-            formData.append('category', category);
-            
-            try {
-                showNotification(`⏳ Загрузка ${files.length} видео...`, 'info');
-                
-                const response = await fetch('/api/content/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                console.log('Результат загрузки видео:', result);
-                
-                if (result.success) {
-                    showNotification(`✅ Успешно загружено ${files.length} видео в категорию "${category}"!`, 'success');
-                    closeModal('uploadModal');
-                    // Сбросить input
-                    document.getElementById('quickVideoFiles').value = '';
-                } else {
-                    showNotification('❌ Ошибка загрузки: ' + (result.message || 'Неизвестная ошибка'), 'error');
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки видео:', error);
-                showNotification('❌ Ошибка: ' + error.message, 'error');
-            }
-        }
-
-        // Создание расписания
-        document.getElementById('quickScheduleForm').addEventListener('submit', async function(e) {
+        
+        uploadZone.addEventListener('dragleave', function(e) {
             e.preventDefault();
-            console.log('Создание расписания');
+            this.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
             
-            const formData = new FormData(this);
-            const scheduleData = Object.fromEntries(formData);
-            
-            try {
-                showNotification('⏳ Создание расписания...', 'info');
-                
-                const response = await fetch('/api/tasks/generate-schedule', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(scheduleData)
-                });
-                
-                const result = await response.json();
-                console.log('Результат создания расписания:', result);
-                
-                if (result.success) {
-                    showNotification(`✅ Расписание создано! Создано задач: ${result.tasks_created}`, 'success');
-                    closeModal('scheduleModal');
-                    this.reset();
-                } else {
-                    showNotification('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'), 'error');
-                }
-            } catch (error) {
-                console.error('Ошибка создания расписания:', error);
-                showNotification('❌ Ошибка: ' + error.message, 'error');
-            }
+            const files = e.dataTransfer.files;
+            console.log('Загружено файлов:', files.length);
+            // Здесь будет обработка загруженных файлов
         });
 
-        // Загрузка данных дашборда
-        async function loadDashboardData() {
-            console.log('Загрузка данных дашборда');
-            
-            try {
-                // Загрузка статистики
-                const statsResponse = await fetch('/api/dashboard/stats');
-                const stats = await statsResponse.json();
-                
-                // Обновление счетчиков
-                if (stats) {
-                    document.getElementById('activeAccounts').textContent = stats.active_accounts || 0;
-                    document.getElementById('postsToday').textContent = stats.posts_today || 0;
-                    document.getElementById('scheduledPosts').textContent = stats.posts_scheduled || 0;
-                    document.getElementById('totalViews').textContent = (stats.total_views || 0).toLocaleString();
-                    document.getElementById('accountsCount').textContent = stats.total_accounts || 0;
-                }
-                
-                console.log('Статистика обновлена:', stats);
-            } catch (error) {
-                console.error('Ошибка загрузки статистики:', error);
-            }
-        }
-
-        // Загрузка активности
-        async function loadRecentActivity() {
-            console.log('Загрузка последней активности');
-            
-            try {
-                const response = await fetch('/api/dashboard/recent-activity');
-                const activities = await response.json();
-                
-                const activityFeed = document.getElementById('activityFeed');
-                
-                if (activities && activities.length > 0) {
-                    activityFeed.innerHTML = activities.map(activity => `
-                        <div class="activity-item">
-                            <div class="activity-icon">${activity.icon || '📝'}</div>
-                            <div class="activity-content">
-                                <div class="activity-title">${activity.action}</div>
-                                <div class="activity-time">${activity.time}</div>
-                            </div>
-                            <div class="activity-status status-${activity.type}">${getStatusIcon(activity.type)}</div>
-                        </div>
-                    `).join('');
-                } else {
-                    activityFeed.innerHTML = '<div class="activity-item"><div class="activity-content"><div class="activity-title">Нет активности</div></div></div>';
-                }
-                
-                console.log('Активность обновлена:', activities);
-            } catch (error) {
-                console.error('Ошибка загрузки активности:', error);
-            }
-        }
-
-        function getStatusIcon(type) {
-            const icons = {
-                'success': '✅',
-                'error': '❌',
-                'warning': '⚠️',
-                'info': 'ℹ️',
-                'scheduled': '⏰'
-            };
-            return icons[type] || 'ℹ️';
-        }
-
-        // Автозагрузка данных при открытии страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Dashboard инициализирован, загрузка данных...');
-            loadDashboardData();
-            loadRecentActivity();
-            
-            // Автообновление каждые 30 секунд
-            setInterval(() => {
-                loadDashboardData();
-                loadRecentActivity();
-            }, 30000);
-        });
-
-        // Кнопка запуска автоматизации
-        document.getElementById('start-automation').addEventListener('click', function() {
-            console.log('Запуск автоматизации');
-            showNotification('🚀 Автоматизация запущена!', 'success');
-        });
+        console.log('🚀 MediaFlux Hub инициализирован!');
     </script>
 </body>
 </html> 
