@@ -15,6 +15,21 @@ from fastapi.middleware.cors import CORSMiddleware
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Определение путей в зависимости от окружения
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+if ENVIRONMENT == "production":
+    # Production пути (Render.com)
+    TEMPLATES_DIR = "templates"
+    STATIC_DIR = "static"
+else:
+    # Development пути (локальная разработка)
+    TEMPLATES_DIR = "../templates"
+    STATIC_DIR = "../static"
+
+logger.info(f"🌍 Environment: {ENVIRONMENT}")
+logger.info(f"📁 Templates directory: {TEMPLATES_DIR}")
+logger.info(f"🎨 Static directory: {STATIC_DIR}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifecycle события приложения"""
@@ -57,10 +72,10 @@ async def health_check():
     }
 
 # Настройка шаблонов
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 # Статические файлы
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Импорт API роутеров
 try:
@@ -109,15 +124,14 @@ async def api_root():
     return {
         "message": "MediaFlux Hub API", 
         "version": "1.0.0",
+        "environment": ENVIRONMENT,
         "docs": "/docs",
         "health": "/health",
         "endpoints": {
             "dashboard": "/api/dashboard",
             "accounts": "/api/accounts", 
             "content": "/api/content",
-            "tasks": "/api/tasks",
-            "system": "/api/system",
-            "proxies": "/api/proxies"
+            "tasks": "/api/tasks"
         } if API_AVAILABLE else "Limited mode - API not available"
     }
 
