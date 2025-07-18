@@ -68,7 +68,7 @@ app.add_middleware(
 # Health check для Render
 @app.get("/health")
 async def health_check():
-    """Health check endpoint для Render"""
+    """🚨 ЭКСТРЕННЫЙ Health check endpoint для принудительного обновления Render"""
     import datetime
     return {
         "status": "healthy",
@@ -76,39 +76,52 @@ async def health_check():
         "version": "1.0.0",
         "api_available": API_AVAILABLE,
         "timestamp": datetime.datetime.now().isoformat(),
-        "templates_loaded": ["dashboard", "accounts", "content", "schedule", "analytics", "settings", "proxies"]
+        "deployment_id": "FORCE_UPDATE_003",
+        "emergency_deployment": True,
+        "templates_loaded": ["dashboard", "accounts", "content", "schedule", "analytics", "settings", "proxies", "test"],
+        "test_page_available": True,
+        "debug_mode": True
     }
 
 # Диагностический endpoint
 @app.get("/debug")
 async def debug_info():
-    """Диагностический endpoint для проверки настроек"""
+    """🚨 ЭКСТРЕННАЯ ОТЛАДОЧНАЯ ИНФОРМАЦИЯ"""
     import os
-    import pathlib
+    from pathlib import Path
     
-    templates_exists = pathlib.Path(TEMPLATES_DIR).exists()
-    static_exists = pathlib.Path(STATIC_DIR).exists()
+    templates_path = Path("templates")
+    static_path = Path("static")
     
     templates_files = []
-    static_files = []
+    static_css = []
+    static_js = []
     
-    if templates_exists:
-        templates_files = [str(f) for f in pathlib.Path(TEMPLATES_DIR).glob("*")]
-    
-    if static_exists:
-        static_files = [str(f) for f in pathlib.Path(STATIC_DIR).glob("**/*")]
+    if templates_path.exists():
+        templates_files = [str(f) for f in templates_path.glob("*.html")]
+        
+    if static_path.exists():
+        static_css = [str(f) for f in static_path.glob("css/*.css")]
+        static_js = [str(f) for f in static_path.glob("js/*.js")]
     
     return {
+        "status": "🚨 EMERGENCY DEBUG",
+        "emergency_check": True,
+        "templates_exists": templates_path.exists(),
+        "static_exists": static_path.exists(),
+        "templates_files": templates_files,
+        "static_css": static_css,
+        "static_js": static_js,
+        "api_available": API_AVAILABLE,
+        "working_directory": os.getcwd(),
         "environment": ENVIRONMENT,
         "templates_dir": TEMPLATES_DIR,
         "static_dir": STATIC_DIR,
-        "templates_exists": templates_exists,
-        "static_exists": static_exists,
-        "templates_files": templates_files[:10],  # Первые 10 файлов
-        "static_files": static_files[:20],        # Первые 20 файлов
-        "working_directory": str(pathlib.Path.cwd()),
-        "api_available": API_AVAILABLE,
-        "python_path": os.environ.get("PYTHONPATH", "Not set")
+        "environment_vars": {
+            "PYTHONPATH": os.environ.get("PYTHONPATH", "Not set"),
+            "PATH": os.environ.get("PATH", "")[:100] + "...",
+            "PORT": os.environ.get("PORT", "Not set")
+        }
     }
 
 # Настройка шаблонов
@@ -189,6 +202,11 @@ async def proxies_page(request: Request):
 async def settings_page(request: Request):
     """Страница настроек"""
     return templates.TemplateResponse("settings.html", {"request": request})
+
+@app.get("/test", response_class=HTMLResponse)
+async def test_page(request: Request):
+    """🚨 ЭКСТРЕННАЯ ТЕСТОВАЯ СТРАНИЦА"""
+    return templates.TemplateResponse("test.html", {"request": request})
 
 # API endpoint для получения данных
 @app.get("/api")

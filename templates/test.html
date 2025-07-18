@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TEST - MediaFlux Hub</title>
+    <style>
+        body { 
+            background: #1a1f2e; 
+            color: white; 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-button { 
+            background: #667eea; 
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .test-form {
+            background: #252d3a;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            max-width: 500px;
+            border: 2px solid #667eea;
+        }
+        
+        input[type="text"], input[type="email"] {
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0;
+            background: #1a1f2e;
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: #5a67d8;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        pre {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #c9d1d9;
+        }
+        
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        
+        h1 { color: #667eea; margin-bottom: 30px; }
+        h2 { color: #5a67d8; margin-top: 0; }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online { background: #28a745; }
+        .status-offline { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>🔧 MediaFlux Hub - EMERGENCY TEST PAGE</h1>
+    
+    <div class="test-form">
+        <h2>🚨 Экстренный тест кнопок</h2>
+        <p>Проверка отображения и работы кнопок:</p>
+        
+        <button class="test-button" onclick="testBasicButton()">
+            ✅ БАЗОВЫЙ ТЕСТ КНОПКИ
+        </button>
+        
+        <button class="test-button" onclick="testAlert()">
+            🔔 ТЕСТ ALERT
+        </button>
+        
+        <button class="test-button" onclick="testConsole()">
+            📝 ТЕСТ CONSOLE.LOG
+        </button>
+        
+        <div id="buttonResults"></div>
+    </div>
+    
+    <div class="test-form">
+        <h2>📝 Тест форм и полей ввода</h2>
+        <input type="text" id="username" placeholder="Введите username" />
+        <input type="email" id="email" placeholder="Введите email" />
+        
+        <button class="test-button" onclick="testForm()">
+            🔍 ПРОВЕРИТЬ ФОРМУ
+        </button>
+        
+        <div id="formResults"></div>
+    </div>
+    
+    <div class="test-form">
+        <h2>🌐 Проверка API подключения</h2>
+        <p>
+            <span class="status-indicator" id="apiStatus"></span>
+            <span id="apiStatusText">Проверяем...</span>
+        </p>
+        
+        <button class="test-button" onclick="testAPI()">
+            🔄 ТЕСТ API ENDPOINTS
+        </button>
+        
+        <button class="test-button" onclick="testHealth()">
+            ❤️ ТЕСТ HEALTH CHECK
+        </button>
+        
+        <div id="apiResults"></div>
+    </div>
+    
+    <div class="test-form">
+        <h2>🔍 Системная диагностика</h2>
+        <button class="test-button" onclick="testDebug()">
+            🐛 ПОЛУЧИТЬ DEBUG INFO
+        </button>
+        
+        <button class="test-button" onclick="testJavaScript()">
+            ⚡ ТЕСТ JAVASCRIPT
+        </button>
+        
+        <div id="debugResults"></div>
+    </div>
+
+    <script>
+        console.log('🚀 EMERGENCY TEST PAGE LOADED');
+        console.log('📅 Load time:', new Date().toISOString());
+        
+        // Автоматический тест при загрузке
+        window.onload = function() {
+            console.log('✅ Window loaded successfully');
+            testAutoLoad();
+        };
+        
+        function testBasicButton() {
+            console.log('🔘 Basic button test');
+            document.getElementById('buttonResults').innerHTML = 
+                '<p class="success">✅ Базовая кнопка работает!</p>';
+        }
+        
+        function testAlert() {
+            alert('🔔 Alert работает! Кнопки отображаются корректно.');
+        }
+        
+        function testConsole() {
+            console.log('📝 Console test successful');
+            console.warn('⚠️ Warning test');
+            console.error('❌ Error test (это тест, не реальная ошибка)');
+            document.getElementById('buttonResults').innerHTML += 
+                '<p class="success">📝 Console.log тесты выполнены (проверьте консоль)</p>';
+        }
+        
+        function testForm() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            
+            console.log('📝 Form values:', { username, email });
+            
+            let result = '<h3>Результаты формы:</h3>';
+            result += `<p>Username: <strong>${username || 'пусто'}</strong></p>`;
+            result += `<p>Email: <strong>${email || 'пусто'}</strong></p>`;
+            
+            if (username && email) {
+                result += '<p class="success">✅ Форма заполнена корректно!</p>';
+            } else {
+                result += '<p class="warning">⚠️ Заполните все поля</p>';
+            }
+            
+            document.getElementById('formResults').innerHTML = result;
+        }
+        
+        async function testAPI() {
+            console.log('🌐 Testing API endpoints...');
+            
+            const endpoints = [
+                '/api/dashboard/stats',
+                '/api/dashboard/system-status',
+                '/api/accounts/',
+                '/health'
+            ];
+            
+            let results = '<h3>Результаты API тестов:</h3>';
+            
+            for (let endpoint of endpoints) {
+                try {
+                    console.log(`🔍 Testing ${endpoint}`);
+                    const response = await fetch(endpoint);
+                    const data = await response.json();
+                    
+                    results += `<p class="success">✅ ${endpoint} - OK (${response.status})</p>`;
+                    console.log(`✅ ${endpoint}:`, data);
+                } catch (error) {
+                    results += `<p class="error">❌ ${endpoint} - ERROR: ${error.message}</p>`;
+                    console.error(`❌ ${endpoint}:`, error);
+                }
+            }
+            
+            document.getElementById('apiResults').innerHTML = results;
+        }
+        
+        async function testHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                document.getElementById('apiStatus').className = 'status-indicator status-online';
+                document.getElementById('apiStatusText').textContent = 'API работает';
+                
+                document.getElementById('apiResults').innerHTML = 
+                    '<h3>Health Check:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+                console.log('❤️ Health check:', data);
+            } catch (error) {
+                document.getElementById('apiStatus').className = 'status-indicator status-offline';
+                document.getElementById('apiStatusText').textContent = 'API недоступен';
+                
+                document.getElementById('apiResults').innerHTML = 
+                    '<p class="error">❌ Health check failed: ' + error.message + '</p>';
+                    
+                console.error('💔 Health check failed:', error);
+            }
+        }
+        
+        async function testDebug() {
+            try {
+                const response = await fetch('/debug');
+                const data = await response.json();
+                
+                document.getElementById('debugResults').innerHTML = 
+                    '<h3>🐛 Debug Information:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+                console.log('🐛 Debug info:', data);
+            } catch (error) {
+                document.getElementById('debugResults').innerHTML = 
+                    '<p class="error">❌ Debug failed: ' + error.message + '</p>';
+                    
+                console.error('🐛 Debug failed:', error);
+            }
+        }
+        
+        function testJavaScript() {
+            const jsTests = [
+                'document.getElementById тест',
+                'fetch API тест', 
+                'JSON.stringify тест',
+                'Console.log тест',
+                'Event handlers тест'
+            ];
+            
+            let result = '<h3>⚡ JavaScript тесты:</h3>';
+            
+            jsTests.forEach((test, index) => {
+                try {
+                    // Имитация различных JS тестов
+                    if (index === 0) document.getElementById('debugResults');
+                    if (index === 1) fetch;
+                    if (index === 2) JSON.stringify({test: true});
+                    if (index === 3) console.log;
+                    if (index === 4) document.addEventListener;
+                    
+                    result += `<p class="success">✅ ${test}</p>`;
+                } catch (error) {
+                    result += `<p class="error">❌ ${test}: ${error.message}</p>`;
+                }
+            });
+            
+            document.getElementById('debugResults').innerHTML = result;
+        }
+        
+        function testAutoLoad() {
+            console.log('🔄 Running auto-tests...');
+            
+            // Автоматически тестируем health endpoint
+            testHealth();
+            
+            // Проверяем базовую работоспособность через 1 секунду
+            setTimeout(() => {
+                console.log('🕐 Auto-test timeout reached');
+                if (document.getElementById('apiStatus').className.includes('offline')) {
+                    console.error('🚨 CRITICAL: API endpoints not responding!');
+                }
+            }, 1000);
+        }
+        
+        // Дополнительные диагностические функции
+        console.log('🔧 Available functions:', [
+            'testBasicButton()',
+            'testAlert()', 
+            'testConsole()',
+            'testForm()',
+            'testAPI()',
+            'testHealth()',
+            'testDebug()',
+            'testJavaScript()'
+        ]);
+    </script>
+</body>
+</html> 
