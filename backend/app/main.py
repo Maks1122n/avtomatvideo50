@@ -65,6 +65,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Favicon endpoint
+@app.get("/favicon.ico")
+async def favicon():
+    """🔧 ИСПРАВЛЕНО: Favicon endpoint чтобы избежать 404 ошибок"""
+    return {"message": "No favicon"}
+
 # Health check для Render
 @app.get("/health")
 async def health_check():

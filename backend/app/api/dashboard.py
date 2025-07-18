@@ -6,7 +6,7 @@ router = APIRouter()
 
 @router.get("/stats")
 async def get_dashboard_stats():
-    """Статистика для дашборда"""
+    """🔧 УЛУЧШЕНО: Полная статистика для дашборда"""
     return {
         "total_accounts": 4,
         "active_accounts": 3,
@@ -16,7 +16,11 @@ async def get_dashboard_stats():
         "automation_status": "active",
         "system_health": "healthy",
         "success_rate": 98.5,
-        "errors_count": 2
+        "errors_count": 2,
+        "uptime": "12h 34m",
+        "memory_usage": 45.2,
+        "cpu_usage": 23.1,
+        "last_updated": datetime.now().isoformat()
     }
 
 @router.get("/system-status")
@@ -35,39 +39,52 @@ async def get_system_status():
 
 @router.get("/recent-activity")
 async def get_recent_activity():
-    """Последние действия системы"""
+    """🔧 ИСПРАВЛЕНО: Последние действия системы с правильной структурой данных"""
     activities = [
         {
             "id": 1,
             "time": "2 минуты назад",
             "action": "Опубликован Reel",
             "account": "@fashion_style",
-            "status": "success",
-            "details": "motivation/video_001.mp4"
+            "type": "success",  # ← ИСПРАВЛЕНО: было "status"
+            "details": "motivation/video_001.mp4",
+            "icon": "📤"
         },
         {
             "id": 2,
             "time": "5 минут назад",
             "action": "Загружено видео",
             "account": "Система",
-            "status": "info",
-            "details": "lifestyle/new_video.mp4"
+            "type": "info",  # ← ИСПРАВЛЕНО: было "status"
+            "details": "lifestyle/new_video.mp4",
+            "icon": "📁"
         },
         {
             "id": 3,
             "time": "10 минут назад",
             "action": "Запланирована публикация",
             "account": "@business_pro",
-            "status": "scheduled",
-            "details": "14:30 сегодня"
+            "type": "scheduled",  # ← ИСПРАВЛЕНО: было "status"
+            "details": "14:30 сегодня",
+            "icon": "⏰"
         },
         {
             "id": 4,
             "time": "15 минут назад",
             "action": "Проверка прокси",
             "account": "Система",
-            "status": "warning",
-            "details": "Прокси server1 требует проверки"
+            "type": "warning",  # ← ИСПРАВЛЕНО: было "status"
+            "details": "Прокси server1 требует проверки",
+            "icon": "⚠️"
+        },
+        {
+            "id": 5,
+            "time": "20 минут назад",
+            "action": "Аккаунт добавлен",
+            "account": "@new_lifestyle_blog",
+            "type": "success",
+            "details": "Соединение проверено",
+            "icon": "✅"
         }
     ]
     return activities 
