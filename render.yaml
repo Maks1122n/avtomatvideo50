@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: mediaflux-hub
+    runtime: docker
+    plan: starter
+    region: oregon
+    buildCommand: ""
+    startCommand: ""
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: CONTENT_PATH
+        value: ./content
+      - key: INSTAGRAM_API_VERSION
+        value: v19.0
+      - key: MAX_CONCURRENT_UPLOADS
+        value: "3"
+      - key: MAX_DAILY_POSTS_PER_ACCOUNT
+        value: "5"
+      - key: MIN_DELAY_BETWEEN_POSTS
+        value: "1800"
+      - key: PROXY_ROTATION_ENABLED
+        value: "true"
+      - key: HEALTH_CHECK_ENABLED
+        value: "true"
+
+databases:
+  - name: mediaflux-database
+    databaseName: mediaflux_db
+    user: mediaflux_user
+    plan: starter
+
+  - name: mediaflux-redis
+    plan: starter 
