@@ -116,7 +116,7 @@ async def health_check():
         "version": "1.0.0",
         "api_available": API_AVAILABLE,
         "timestamp": datetime.datetime.now().isoformat(),
-        "deployment_id": "MODERN_DESIGN_INTEGRATED_005",
+        "deployment_id": "MOBILE_NAVIGATION_ADDED_006",
         "test_page_available": True
     }
 
