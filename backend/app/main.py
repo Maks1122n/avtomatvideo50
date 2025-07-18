@@ -1,6 +1,7 @@
 """
 MediaFlux Hub - Instagram Reels Automation Platform
 Main FastAPI Application
+Updated: 2024-12-19 for Render.com deployment
 """
 import os
 import logging
@@ -21,10 +22,12 @@ if ENVIRONMENT == "production":
     # Production пути (Render.com)
     TEMPLATES_DIR = "templates"
     STATIC_DIR = "static"
+    logger.info("🌐 PRODUCTION MODE: Render.com deployment")
 else:
     # Development пути (локальная разработка)
     TEMPLATES_DIR = "../templates"
     STATIC_DIR = "../static"
+    logger.info("💻 DEVELOPMENT MODE: Local development")
 
 logger.info(f"🌍 Environment: {ENVIRONMENT}")
 logger.info(f"📁 Templates directory: {TEMPLATES_DIR}")
