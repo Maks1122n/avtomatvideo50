@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контент - MediaFlux Hub</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-video"></i>
+                    <h2>MediaFlux Hub</h2>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="/" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/accounts" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Аккаунты</span>
+                </a>
+                <a href="/content" class="menu-item active">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Контент</span>
+                </a>
+                <a href="/schedule" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Планировщик</span>
+                </a>
+                <a href="/analytics" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Аналитика</span>
+                </a>
+                <a href="/proxies" class="menu-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Прокси</span>
+                </a>
+                <a href="/settings" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Управление контентом</h1>
+                    <span class="breadcrumb">Главная / Контент</span>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="showUploadArea()">
+                        <i class="fas fa-upload"></i>
+                        Загрузить видео
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Загрузка видео -->
+                <div class="upload-section card" id="uploadSection">
+                    <div class="card-header">
+                        <h2>Загрузить видео контент</h2>
+                        <div class="upload-stats">
+                            <span class="stat">Загружено сегодня: <strong>12 видео</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="upload-text">Перетащите видео сюда или нажмите для выбора</p>
+                        <p class="upload-subtext">Поддерживаемые форматы: MP4, MOV (макс. 500MB)</p>
+                        <input type="file" id="videoFiles" multiple accept="video/mp4,video/mov" hidden>
+                        <button class="btn btn-secondary" onclick="document.getElementById('videoFiles').click()">
+                            <i class="fas fa-folder-open"></i>
+                            Выбрать файлы
+                        </button>
+                    </div>
+                    
+                    <div class="upload-options">
+                        <div class="form-group">
+                            <label for="videoCategory">Категория:</label>
+                            <select id="videoCategory">
+                                <option value="motivation">Мотивация</option>
+                                <option value="lifestyle">Лайфстайл</option>
+                                <option value="business">Бизнес</option>
+                                <option value="entertainment">Развлечения</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="autoCaption">
+                                <input type="checkbox" id="autoCaption" checked>
+                                Автоматически генерировать описания
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-progress hidden" id="uploadProgress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">Загрузка: 0%</p>
+                    </div>
+                </div>
+
+                <!-- Просмотр папок с контентом -->
+                <div class="content-folders">
+                    <div class="section-header">
+                        <h2>Папки с контентом</h2>
+                        <div class="content-stats">
+                            <span class="stat-item">
+                                <i class="fas fa-video text-primary"></i>
+                                <span id="totalVideos">0</span> видео
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-hdd text-secondary"></i>
+                                <span id="totalSize">0 GB</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="folders-grid" id="foldersGrid">
+                        <!-- Загружается через JavaScript -->
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Загрузка папок...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Список видео в выбранной папке -->
+                <div class="videos-section hidden" id="videosSection">
+                    <div class="section-header">
+                        <h2>Видео в папке: <span id="currentFolderName"></span></h2>
+                        <button class="btn btn-secondary" onclick="backToFolders()">
+                            <i class="fas fa-arrow-left"></i>
+                            Назад к папкам
+                        </button>
+                    </div>
+                    
+                    <div class="videos-grid" id="videosGrid">
+                        <!-- Загружается через JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Video Preview Modal -->
+    <div class="modal hidden" id="videoModal">
+        <div class="modal-content video-modal">
+            <div class="modal-header">
+                <h3 id="videoModalTitle">Предварительный просмотр</h3>
+                <button class="close-btn" onclick="closeVideoModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <video id="videoPreview" controls style="width: 100%; max-height: 400px;"></video>
+                <div class="video-info" id="videoInfo">
+                    <!-- Информация о видео -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- CSS Styles for Content Page -->
+    <style>
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+
+        .upload-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-tertiary);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-tertiary);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .upload-subtext {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .folders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .folder-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .folder-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .folder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .folder-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .folder-icon {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+        }
+
+        .folder-info h3 {
+            margin: 0 0 0.25rem 0;
+            color: var(--text-primary);
+        }
+
+        .folder-info p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .folder-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .folder-stat {
+            text-align: center;
+        }
+
+        .folder-stat-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .folder-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .folder-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .folder-last-upload {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .folder-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--success-color);
+            color: white;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-thumbnail i {
+            font-size: 2rem;
+            color: var(--text-muted);
+        }
+
+        .video-duration {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .video-content {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .video-size {
+            font-weight: 500;
+        }
+
+        .video-used {
+            color: var(--success-color);
+        }
+
+        .video-modal .modal-content {
+            max-width: 800px;
+        }
+
+        .video-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .folders-grid,
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/content.js"></script>
+</body>
+</html> 

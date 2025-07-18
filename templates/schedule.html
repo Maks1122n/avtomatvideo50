@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планировщик - MediaFlux Hub</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-video"></i>
+                    <h2>MediaFlux Hub</h2>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="/" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/accounts" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Аккаунты</span>
+                </a>
+                <a href="/content" class="menu-item">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Контент</span>
+                </a>
+                <a href="/schedule" class="menu-item active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Планировщик</span>
+                </a>
+                <a href="/analytics" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Аналитика</span>
+                </a>
+                <a href="/proxies" class="menu-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Прокси</span>
+                </a>
+                <a href="/settings" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Планировщик публикаций</h1>
+                    <span class="breadcrumb">Главная / Планировщик</span>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="showScheduleForm()">
+                        <i class="fas fa-plus"></i>
+                        Создать расписание
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Статистика расписания -->
+                <div class="schedule-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="postsToday">0</h3>
+                            <p>Сегодня</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="postsTomorrow">0</h3>
+                            <p>Завтра</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="postsThisWeek">0</h3>
+                            <p>Эта неделя</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="nextPost">--:--</h3>
+                            <p>Следующая публикация</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Создание расписания -->
+                <div class="schedule-section card hidden" id="scheduleFormSection">
+                    <div class="card-header">
+                        <h2>Создать расписание публикаций</h2>
+                        <button class="close-btn" onclick="hideScheduleForm()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="scheduleForm" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Выберите аккаунты</label>
+                                <div id="accountsCheckboxes" class="checkboxes-grid">
+                                    <!-- Загружается через JavaScript -->
+                                    <div class="loading-text">Загрузка аккаунтов...</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="period">Период планирования</label>
+                                <select id="period" name="period">
+                                    <option value="week">На неделю</option>
+                                    <option value="month">На месяц</option>
+                                    <option value="custom">Пользовательский период</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Время публикаций</label>
+                                <div class="time-range">
+                                    <input type="time" id="start_time" name="start_time" value="09:00">
+                                    <span class="time-separator">до</span>
+                                    <input type="time" id="end_time" name="end_time" value="22:00">
+                                </div>
+                                <small class="form-help">Публикации будут распределены в этом временном диапазоне</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="posts_per_day">Постов в день на аккаунт</label>
+                                <input type="number" id="posts_per_day" name="posts_per_day" min="1" max="12" value="3">
+                                <small class="form-help">Рекомендуется 3-5 постов для избежания ограничений</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Дни недели</label>
+                                <div class="weekdays-selector">
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="1" checked>
+                                        <span>Пн</span>
+                                    </label>
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="2" checked>
+                                        <span>Вт</span>
+                                    </label>
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="3" checked>
+                                        <span>Ср</span>
+                                    </label>
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="4" checked>
+                                        <span>Чт</span>
+                                    </label>
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="5" checked>
+                                        <span>Пт</span>
+                                    </label>
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="6" checked>
+                                        <span>Сб</span>
+                                    </label>
+                                    <label class="weekday-item">
+                                        <input type="checkbox" name="weekdays" value="0" checked>
+                                        <span>Вс</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="content_category">Приоритет контента</label>
+                                <select id="content_category" name="content_category">
+                                    <option value="mixed">Смешанный контент</option>
+                                    <option value="motivation">Приоритет: Мотивация</option>
+                                    <option value="business">Приоритет: Бизнес</option>
+                                    <option value="lifestyle">Приоритет: Лайфстайл</option>
+                                    <option value="entertainment">Приоритет: Развлечения</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="previewSchedule()">
+                                <i class="fas fa-eye"></i>
+                                Предварительный просмотр
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-plus"></i>
+                                Сгенерировать расписание
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Календарь с расписанием -->
+                <div class="schedule-calendar">
+                    <div class="calendar-header">
+                        <h2>Календарь публикаций</h2>
+                        <div class="calendar-controls">
+                            <button class="btn btn-secondary" onclick="previousMonth()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h3 id="currentMonth">Январь 2024</h3>
+                            <button class="btn btn-secondary" onclick="nextMonth()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar" id="calendar">
+                        <!-- Календарь загружается через JavaScript -->
+                        <div class="calendar-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Загрузка календаря...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Список запланированных публикаций -->
+                <div class="scheduled-posts">
+                    <div class="section-header">
+                        <h2>Запланированные публикации</h2>
+                        <div class="posts-filter">
+                            <select id="postsFilter" onchange="filterPosts()">
+                                <option value="all">Все публикации</option>
+                                <option value="today">Сегодня</option>
+                                <option value="tomorrow">Завтра</option>
+                                <option value="week">Эта неделя</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="posts-list" id="postsList">
+                        <!-- Загружается через JavaScript -->
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Загрузка публикаций...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Schedule Preview Modal -->
+    <div class="modal hidden" id="schedulePreviewModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3>Предварительный просмотр расписания</h3>
+                <button class="close-btn" onclick="closeSchedulePreview()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="schedulePreviewContent">
+                    <!-- Предварительный просмотр загружается через JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- CSS Styles for Schedule Page -->
+    <style>
+        .schedule-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkboxes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .checkbox-item:hover {
+            background: var(--bg-input);
+        }
+
+        .checkbox-item input {
+            margin: 0;
+        }
+
+        .time-range {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .time-separator {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .weekdays-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .weekday-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 3rem;
+        }
+
+        .weekday-item:hover {
+            background: var(--bg-input);
+        }
+
+        .weekday-item input {
+            margin: 0 0 0.5rem 0;
+        }
+
+        .weekday-item span {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .weekday-item input:checked + span {
+            color: var(--primary-color);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .calendar-controls h3 {
+            margin: 0;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .calendar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-header-day {
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .calendar-day {
+            padding: 1rem;
+            min-height: 120px;
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .calendar-day:nth-child(7n) {
+            border-right: none;
+        }
+
+        .calendar-day.other-month {
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+        }
+
+        .calendar-day.today {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-posts {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .post-item {
+            padding: 0.25rem 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .post-item:hover {
+            background: var(--primary-dark);
+        }
+
+        .post-item.business {
+            background: var(--secondary-color);
+        }
+
+        .post-item.lifestyle {
+            background: var(--accent-color);
+        }
+
+        .post-item.entertainment {
+            background: var(--warning-color);
+        }
+
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .post-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .post-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .post-account {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .post-time {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .post-content {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .post-video {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .post-details h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .post-details p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .post-action {
+            padding: 0.5rem;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .post-action:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .posts-filter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .loading-text {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .calendar-loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .large-modal .modal-content {
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .calendar-controls {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .weekdays-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/schedule.js"></script>
+</body>
+</html> 

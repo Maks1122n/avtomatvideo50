@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аккаунты - MediaFlux Hub</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-video"></i>
+                    <h2>MediaFlux Hub</h2>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="/" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/accounts" class="menu-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Аккаунты</span>
+                </a>
+                <a href="/content" class="menu-item">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Контент</span>
+                </a>
+                <a href="/schedule" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Планировщик</span>
+                </a>
+                <a href="/analytics" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Аналитика</span>
+                </a>
+                <a href="/proxies" class="menu-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Прокси</span>
+                </a>
+                <a href="/settings" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Управление аккаунтами</h1>
+                    <span class="breadcrumb">Главная / Аккаунты</span>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="showAddAccountForm()">
+                        <i class="fas fa-plus"></i>
+                        Добавить аккаунт
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Форма добавления нового аккаунта -->
+                <div class="add-account-form card hidden" id="addAccountSection">
+                    <div class="card-header">
+                        <h2>Добавить Instagram аккаунт</h2>
+                        <button class="close-btn" onclick="hideAddAccountForm()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="addAccountForm" class="form">
+                        <div class="form-group">
+                            <label for="username">Username Instagram</label>
+                            <input type="text" id="username" name="username" placeholder="@your_account" required>
+                            <small class="form-help">Введите имя пользователя без символа @</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="access_token">Access Token</label>
+                            <textarea id="access_token" name="access_token" placeholder="Вставьте Instagram Graph API токен" required rows="4"></textarea>
+                            <small class="form-help">Получите токен в Instagram Basic Display API</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="account_id">Instagram Account ID</label>
+                            <input type="text" id="account_id" name="account_id" placeholder="1234567890" required>
+                            <small class="form-help">ID аккаунта Instagram для API вызовов</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="proxy">Прокси (опционально)</label>
+                            <input type="text" id="proxy" name="proxy" placeholder="http://user:pass@ip:port">
+                            <small class="form-help">Прокси сервер для обхода ограничений</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="daily_limit">Дневной лимит постов</label>
+                            <select id="daily_limit" name="daily_limit">
+                                <option value="2">2 поста в день</option>
+                                <option value="5" selected>5 постов в день</option>
+                                <option value="8">8 постов в день</option>
+                                <option value="12">12 постов в день</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="testConnection()">
+                                <i class="fas fa-wifi"></i>
+                                Проверить соединение
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Добавить аккаунт
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Список существующих аккаунтов -->
+                <div class="accounts-list">
+                    <div class="section-header">
+                        <h2>Мои аккаунты</h2>
+                        <div class="accounts-stats">
+                            <span class="stat-item">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span id="activeAccountsCount">0</span> активных
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-clock text-warning"></i>
+                                <span id="limitedAccountsCount">0</span> ограниченных
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="accounts-grid" id="accountsList">
+                        <!-- Загружается через JavaScript -->
+                        <div class="loading-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Загрузка аккаунтов...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Account Details Modal -->
+    <div class="modal hidden" id="accountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Детали аккаунта</h3>
+                <button class="close-btn" onclick="closeAccountModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="accountModalContent">
+                <!-- Детали аккаунта загружаются через JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- CSS Styles for Accounts Page -->
+    <style>
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .form {
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .accounts-stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .account-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .account-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .account-card.active {
+            border-color: var(--success-color);
+        }
+
+        .account-card.limited {
+            border-color: var(--warning-color);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .account-username {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .account-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .account-status.active {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .account-status.limited {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .account-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .account-stat {
+            text-align: center;
+        }
+
+        .account-stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .account-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .account-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .account-action {
+            flex: 1;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .account-action:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .loading-placeholder {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .accounts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/accounts.js"></script>
+</body>
+</html> 

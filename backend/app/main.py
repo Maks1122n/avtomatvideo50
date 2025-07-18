@@ -76,6 +76,37 @@ async def dashboard(request: Request):
     """Главная страница MediaFlux Hub Dashboard"""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+@app.get("/accounts", response_class=HTMLResponse)
+async def accounts_page(request: Request):
+    """Страница управления аккаунтами"""
+    return templates.TemplateResponse("accounts.html", {"request": request})
+
+@app.get("/content", response_class=HTMLResponse)  
+async def content_page(request: Request):
+    """Страница управления контентом"""
+    return templates.TemplateResponse("content.html", {"request": request})
+
+@app.get("/schedule", response_class=HTMLResponse)
+async def schedule_page(request: Request):
+    """Страница планирования"""
+    return templates.TemplateResponse("schedule.html", {"request": request})
+
+# Добавить routes для всех страниц
+@app.get("/accounts", response_class=HTMLResponse)
+async def accounts_page(request: Request):
+    """Страница управления аккаунтами"""
+    return templates.TemplateResponse("accounts.html", {"request": request})
+
+@app.get("/content", response_class=HTMLResponse)  
+async def content_page(request: Request):
+    """Страница управления контентом"""
+    return templates.TemplateResponse("content.html", {"request": request})
+
+@app.get("/schedule", response_class=HTMLResponse)
+async def schedule_page(request: Request):
+    """Страница планирования"""
+    return templates.TemplateResponse("schedule.html", {"request": request})
+
 # Подключение API роутеров
 if API_AVAILABLE:
     app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])

@@ -386,6 +386,101 @@ class MediaFluxDashboard {
         return num.toString();
     }
 
+    // Добавление аккаунта
+    async addAccount(formData) {
+        try {
+            const response = await fetch('/api/accounts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            const result = await response.json();
+            
+            if (response.ok) {
+                this.showNotification('Аккаунт успешно добавлен!', 'success');
+                this.loadAccounts();
+            } else {
+                this.showNotification('Ошибка добавления аккаунта', 'error');
+            }
+        } catch (error) {
+            this.showNotification('Ошибка добавления аккаунта', 'error');
+        }
+    }
+    
+    // Тестирование соединения
+    async testConnection(accountData) {
+        this.showNotification('Проверка соединения...', 'info');
+        try {
+            const response = await fetch('/api/accounts/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(accountData)
+            });
+            const result = await response.json();
+            
+            if (response.ok) {
+                this.showNotification('Соединение успешно!', 'success');
+            } else {
+                this.showNotification('Ошибка соединения с Instagram', 'error');
+            }
+        } catch (error) {
+            this.showNotification('Ошибка соединения с Instagram', 'error');
+        }
+    }
+    
+    // Загрузка видео
+    async uploadVideos(files, category) {
+        const formData = new FormData();
+        for (let file of files) {
+            formData.append('videos', file);
+        }
+        formData.append('category', category);
+        
+        try {
+            const response = await fetch('/api/content/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (response.ok) {
+                this.showNotification(`Загружено ${files.length} видео!`, 'success');
+                this.loadFolders();
+            } else {
+                this.showNotification('Ошибка загрузки видео', 'error');
+            }
+        } catch (error) {
+            this.showNotification('Ошибка загрузки видео', 'error');
+        }
+    }
+    
+    // Создание расписания
+    async createSchedule(scheduleData) {
+        try {
+            const response = await fetch('/api/schedule/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(scheduleData)
+            });
+            const result = await response.json();
+            
+            if (response.ok) {
+                this.showNotification('Расписание создано!', 'success');
+                this.loadCalendar();
+            } else {
+                this.showNotification('Ошибка создания расписания', 'error');
+            }
+        } catch (error) {
+            this.showNotification('Ошибка создания расписания', 'error');
+        }
+    }
+
     // Cleanup
     destroy() {
         if (this.updateInterval) {
