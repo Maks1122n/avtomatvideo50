@@ -5,52 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Планировщик - MediaFlux Hub</title>
     <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
+    <div class="dashboard">
+        <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-video"></i>
-                    <h2>MediaFlux Hub</h2>
-                </div>
+            <div class="logo">
+                <i class="fas fa-video"></i>
+                <span>MediaFlux Hub</span>
             </div>
             
-            <div class="sidebar-menu">
-                <a href="/" class="menu-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="/accounts" class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span>Аккаунты</span>
-                </a>
-                <a href="/content" class="menu-item">
-                    <i class="fas fa-folder-open"></i>
-                    <span>Контент</span>
-                </a>
-                <a href="/schedule" class="menu-item active">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Планировщик</span>
-                </a>
-                <a href="/analytics" class="menu-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Аналитика</span>
-                </a>
-                <a href="/proxies" class="menu-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Прокси</span>
-                </a>
-                <a href="/settings" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Настройки</span>
-                </a>
-            </div>
+            <ul class="menu">
+                <li class="menu-item">
+                    <a href="/">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/accounts">
+                        <i class="fas fa-users"></i>
+                        <span>Аккаунты</span>
+                        <span class="badge">3</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/content">
+                        <i class="fas fa-folder"></i>
+                        <span>Контент</span>
+                        <span class="badge">156</span>
+                    </a>
+                </li>
+                <li class="menu-item active">
+                    <a href="/schedule">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Планировщик</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Аналитика</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/proxies">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Прокси</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Настройки</span>
+                    </a>
+                </li>
+            </ul>
         </nav>
 
         <!-- Main Content -->
@@ -62,208 +73,334 @@
                     <span class="breadcrumb">Главная / Планировщик</span>
                 </div>
                 <div class="header-right">
-                    <button class="btn btn-primary" onclick="showScheduleForm()">
-                        <i class="fas fa-plus"></i>
-                        Создать расписание
+                    <button class="btn btn-primary" onclick="generateAutoSchedule()">
+                        <i class="fas fa-magic"></i>
+                        Автоматическое расписание
                     </button>
+                    <div class="user-profile">
+                        <i class="fas fa-user"></i>
+                        <span>Administrator</span>
+                    </div>
                 </div>
             </header>
 
-            <!-- Content -->
+            <!-- Schedule Creation Form -->
             <div class="content">
-                <!-- Статистика расписания -->
-                <div class="schedule-stats">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-day"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="postsToday">0</h3>
-                            <p>Сегодня</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-plus"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="postsTomorrow">0</h3>
-                            <p>Завтра</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-week"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="postsThisWeek">0</h3>
-                            <p>Эта неделя</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="nextPost">--:--</h3>
-                            <p>Следующая публикация</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Создание расписания -->
-                <div class="schedule-section card hidden" id="scheduleFormSection">
-                    <div class="card-header">
+                <div class="content-section">
+                    <div class="form-container">
                         <h2>Создать расписание публикаций</h2>
-                        <button class="close-btn" onclick="hideScheduleForm()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <form id="scheduleForm" class="form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Выберите аккаунты</label>
-                                <div id="accountsCheckboxes" class="checkboxes-grid">
-                                    <!-- Загружается через JavaScript -->
-                                    <div class="loading-text">Загрузка аккаунтов...</div>
+                        
+                        <form id="scheduleForm" class="schedule-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="schedule_name">Название расписания</label>
+                                    <input type="text" id="schedule_name" name="schedule_name" placeholder="Еженедельное расписание" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="period">Период планирования</label>
+                                    <select id="period" name="period">
+                                        <option value="week">На неделю (7 дней)</option>
+                                        <option value="month">На месяц (30 дней)</option>
+                                        <option value="custom">Пользовательский период</option>
+                                    </select>
                                 </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="period">Период планирования</label>
-                                <select id="period" name="period">
-                                    <option value="week">На неделю</option>
-                                    <option value="month">На месяц</option>
-                                    <option value="custom">Пользовательский период</option>
-                                </select>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="posts_per_day">Публикаций в день</label>
+                                    <input type="number" id="posts_per_day" name="posts_per_day" min="1" max="12" value="3">
+                                    <small class="form-help">Рекомендуется: 3-5 постов в день</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="content_category">Категория контента</label>
+                                    <select id="content_category" name="content_category">
+                                        <option value="mixed">Смешанный контент</option>
+                                        <option value="motivation">🔥 Мотивация</option>
+                                        <option value="lifestyle">✨ Лайфстайл</option>
+                                        <option value="business">💼 Бизнес</option>
+                                        <option value="entertainment">🎉 Развлечения</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Время публикаций</label>
-                                <div class="time-range">
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="start_time">Время начала публикаций</label>
                                     <input type="time" id="start_time" name="start_time" value="09:00">
-                                    <span class="time-separator">до</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="end_time">Время окончания публикаций</label>
                                     <input type="time" id="end_time" name="end_time" value="22:00">
                                 </div>
-                                <small class="form-help">Публикации будут распределены в этом временном диапазоне</small>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="posts_per_day">Постов в день на аккаунт</label>
-                                <input type="number" id="posts_per_day" name="posts_per_day" min="1" max="12" value="3">
-                                <small class="form-help">Рекомендуется 3-5 постов для избежания ограничений</small>
-                            </div>
-                        </div>
 
-                        <div class="form-row">
                             <div class="form-group">
-                                <label>Дни недели</label>
-                                <div class="weekdays-selector">
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="1" checked>
-                                        <span>Пн</span>
+                                <label>Выберите аккаунты для публикации</label>
+                                <div class="accounts-selection" id="accountsSelection">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="accounts" value="demo_fashion" checked>
+                                        <span class="checkmark"></span>
+                                        <div class="account-item">
+                                            <i class="fas fa-user"></i>
+                                            <span>@demo_fashion</span>
+                                            <small>12.5K подписчиков</small>
+                                        </div>
                                     </label>
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="2" checked>
-                                        <span>Вт</span>
+                                    
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="accounts" value="demo_lifestyle" checked>
+                                        <span class="checkmark"></span>
+                                        <div class="account-item">
+                                            <i class="fas fa-camera"></i>
+                                            <span>@demo_lifestyle</span>
+                                            <small>8.9K подписчиков</small>
+                                        </div>
                                     </label>
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="3" checked>
-                                        <span>Ср</span>
-                                    </label>
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="4" checked>
-                                        <span>Чт</span>
-                                    </label>
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="5" checked>
-                                        <span>Пт</span>
-                                    </label>
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="6" checked>
-                                        <span>Сб</span>
-                                    </label>
-                                    <label class="weekday-item">
-                                        <input type="checkbox" name="weekdays" value="0" checked>
-                                        <span>Вс</span>
+                                    
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="accounts" value="demo_business">
+                                        <span class="checkmark"></span>
+                                        <div class="account-item">
+                                            <i class="fas fa-briefcase"></i>
+                                            <span>@demo_business</span>
+                                            <small>24.1K подписчиков (приостановлен)</small>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="content_category">Приоритет контента</label>
-                                <select id="content_category" name="content_category">
-                                    <option value="mixed">Смешанный контент</option>
-                                    <option value="motivation">Приоритет: Мотивация</option>
-                                    <option value="business">Приоритет: Бизнес</option>
-                                    <option value="lifestyle">Приоритет: Лайфстайл</option>
-                                    <option value="entertainment">Приоритет: Развлечения</option>
+                                <label for="posting_strategy">Стратегия публикации</label>
+                                <select id="posting_strategy" name="posting_strategy">
+                                    <option value="even">Равномерное распределение</option>
+                                    <option value="peak_hours">В часы пиковой активности</option>
+                                    <option value="random">Случайное время (в пределах интервала)</option>
+                                    <option value="optimal">Оптимальное время для аудитории</option>
                                 </select>
+                                <small class="form-help">Влияет на время публикаций в течение дня</small>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="previewSchedule()">
+                                    <i class="fas fa-eye"></i>
+                                    Предварительный просмотр
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check"></i>
+                                    Создать расписание
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Current Schedule -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2>Запланированные публикации</h2>
+                        <div class="section-actions">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" data-filter="all">Все</button>
+                                <button class="filter-tab" data-filter="pending">Ожидают</button>
+                                <button class="filter-tab" data-filter="scheduled">Запланированы</button>
+                                <button class="filter-tab" data-filter="completed">Выполнены</button>
+                                <button class="filter-tab" data-filter="failed">Ошибки</button>
+                            </div>
+                            <button class="btn btn-secondary" onclick="refreshTasks()">
+                                <i class="fas fa-sync-alt"></i>
+                                Обновить
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tasks-container">
+                        <div class="tasks-list" id="tasksList">
+                            <!-- Demo task 1 -->
+                            <div class="task-item" data-status="scheduled">
+                                <div class="task-status-indicator status-scheduled"></div>
+                                <div class="task-content">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <h4>motivation/success_mindset.mp4</h4>
+                                            <span class="task-account">@demo_fashion</span>
+                                        </div>
+                                        <div class="task-meta">
+                                            <span class="task-time">
+                                                <i class="fas fa-clock"></i>
+                                                Сегодня в 14:30
+                                            </span>
+                                            <span class="task-category">
+                                                <i class="fas fa-tag"></i>
+                                                Мотивация
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="task-actions">
+                                        <span class="status-badge status-scheduled">Запланировано</span>
+                                        <button class="btn btn-small btn-secondary" onclick="editTask(1)">
+                                            <i class="fas fa-edit"></i>
+                                            Изменить
+                                        </button>
+                                        <button class="btn btn-small btn-danger" onclick="cancelTask(1)">
+                                            <i class="fas fa-times"></i>
+                                            Отменить
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Demo task 2 -->
+                            <div class="task-item" data-status="pending">
+                                <div class="task-status-indicator status-pending"></div>
+                                <div class="task-content">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <h4>lifestyle/morning_routine_tips.mp4</h4>
+                                            <span class="task-account">@demo_lifestyle</span>
+                                        </div>
+                                        <div class="task-meta">
+                                            <span class="task-time">
+                                                <i class="fas fa-clock"></i>
+                                                Сегодня в 16:45
+                                            </span>
+                                            <span class="task-category">
+                                                <i class="fas fa-tag"></i>
+                                                Лайфстайл
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="task-actions">
+                                        <span class="status-badge status-pending">Ожидает</span>
+                                        <button class="btn btn-small btn-secondary" onclick="editTask(2)">
+                                            <i class="fas fa-edit"></i>
+                                            Изменить
+                                        </button>
+                                        <button class="btn btn-small btn-success" onclick="approveTask(2)">
+                                            <i class="fas fa-check"></i>
+                                            Одобрить
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Demo task 3 -->
+                            <div class="task-item" data-status="completed">
+                                <div class="task-status-indicator status-completed"></div>
+                                <div class="task-content">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <h4>business/entrepreneur_tips.mp4</h4>
+                                            <span class="task-account">@demo_fashion</span>
+                                        </div>
+                                        <div class="task-meta">
+                                            <span class="task-time">
+                                                <i class="fas fa-clock"></i>
+                                                Сегодня в 11:15
+                                            </span>
+                                            <span class="task-category">
+                                                <i class="fas fa-tag"></i>
+                                                Бизнес
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="task-actions">
+                                        <span class="status-badge status-completed">Выполнено</span>
+                                        <button class="btn btn-small btn-secondary" onclick="viewResults(3)">
+                                            <i class="fas fa-chart-line"></i>
+                                            Результаты
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Demo task 4 -->
+                            <div class="task-item" data-status="scheduled">
+                                <div class="task-status-indicator status-scheduled"></div>
+                                <div class="task-content">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <h4>motivation/daily_inspiration.mp4</h4>
+                                            <span class="task-account">@demo_lifestyle</span>
+                                        </div>
+                                        <div class="task-meta">
+                                            <span class="task-time">
+                                                <i class="fas fa-clock"></i>
+                                                Завтра в 10:00
+                                            </span>
+                                            <span class="task-category">
+                                                <i class="fas fa-tag"></i>
+                                                Мотивация
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="task-actions">
+                                        <span class="status-badge status-scheduled">Запланировано</span>
+                                        <button class="btn btn-small btn-secondary" onclick="editTask(4)">
+                                            <i class="fas fa-edit"></i>
+                                            Изменить
+                                        </button>
+                                        <button class="btn btn-small btn-danger" onclick="cancelTask(4)">
+                                            <i class="fas fa-times"></i>
+                                            Отменить
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Statistics -->
+                <div class="content-section">
+                    <h2>Статистика расписания</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>45</h3>
+                                <p>Запланировано на эту неделю</p>
                             </div>
                         </div>
                         
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" onclick="previewSchedule()">
-                                <i class="fas fa-eye"></i>
-                                Предварительный просмотр
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-calendar-plus"></i>
-                                Сгенерировать расписание
-                            </button>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>12</h3>
+                                <p>Ожидают одобрения</p>
+                            </div>
                         </div>
-                    </form>
-                </div>
-
-                <!-- Календарь с расписанием -->
-                <div class="schedule-calendar">
-                    <div class="calendar-header">
-                        <h2>Календарь публикаций</h2>
-                        <div class="calendar-controls">
-                            <button class="btn btn-secondary" onclick="previousMonth()">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <h3 id="currentMonth">Январь 2024</h3>
-                            <button class="btn btn-secondary" onclick="nextMonth()">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>28</h3>
+                                <p>Опубликовано сегодня</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="calendar" id="calendar">
-                        <!-- Календарь загружается через JavaScript -->
-                        <div class="calendar-loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            Загрузка календаря...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Список запланированных публикаций -->
-                <div class="scheduled-posts">
-                    <div class="section-header">
-                        <h2>Запланированные публикации</h2>
-                        <div class="posts-filter">
-                            <select id="postsFilter" onchange="filterPosts()">
-                                <option value="all">Все публикации</option>
-                                <option value="today">Сегодня</option>
-                                <option value="tomorrow">Завтра</option>
-                                <option value="week">Эта неделя</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="posts-list" id="postsList">
-                        <!-- Загружается через JavaScript -->
-                        <div class="loading-placeholder">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            Загрузка публикаций...
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>96.5%</h3>
+                                <p>Успешность публикаций</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -271,346 +408,172 @@
         </main>
     </div>
 
-    <!-- Schedule Preview Modal -->
-    <div class="modal hidden" id="schedulePreviewModal">
-        <div class="modal-content large-modal">
-            <div class="modal-header">
-                <h3>Предварительный просмотр расписания</h3>
-                <button class="close-btn" onclick="closeSchedulePreview()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="schedulePreviewContent">
-                    <!-- Предварительный просмотр загружается через JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Container -->
-    <div class="notification-container" id="notification-container"></div>
-
-    <!-- CSS Styles for Schedule Page -->
-    <style>
-        .schedule-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .checkboxes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 1rem;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: var(--radius-sm);
-            transition: var(--transition);
-        }
-
-        .checkbox-item:hover {
-            background: var(--bg-input);
-        }
-
-        .checkbox-item input {
-            margin: 0;
-        }
-
-        .time-range {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .time-separator {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .weekdays-selector {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .weekday-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.75rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: var(--transition);
-            min-width: 3rem;
-        }
-
-        .weekday-item:hover {
-            background: var(--bg-input);
-        }
-
-        .weekday-item input {
-            margin: 0 0 0.5rem 0;
-        }
-
-        .weekday-item span {
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .weekday-item input:checked + span {
-            color: var(--primary-color);
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .calendar-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .calendar-controls h3 {
-            margin: 0;
-            min-width: 150px;
-            text-align: center;
-        }
-
-        .calendar {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-        }
-
-        .calendar-header-day {
-            padding: 1rem;
-            text-align: center;
-            font-weight: 600;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        .calendar-day {
-            padding: 1rem;
-            min-height: 120px;
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-        }
-
-        .calendar-day:nth-child(7n) {
-            border-right: none;
-        }
-
-        .calendar-day.other-month {
-            color: var(--text-muted);
-            background: var(--bg-tertiary);
-        }
-
-        .calendar-day.today {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: var(--primary-color);
-        }
-
-        .day-number {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .day-posts {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .post-item {
-            padding: 0.25rem 0.5rem;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .post-item:hover {
-            background: var(--primary-dark);
-        }
-
-        .post-item.business {
-            background: var(--secondary-color);
-        }
-
-        .post-item.lifestyle {
-            background: var(--accent-color);
-        }
-
-        .post-item.entertainment {
-            background: var(--warning-color);
-        }
-
-        .posts-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .post-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            transition: var(--transition);
-        }
-
-        .post-card:hover {
-            border-color: var(--primary-color);
-        }
-
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .post-account {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .post-time {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        .post-content {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .post-video {
-            width: 60px;
-            height: 60px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-        }
-
-        .post-details h4 {
-            margin: 0 0 0.5rem 0;
-            color: var(--text-primary);
-        }
-
-        .post-details p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .post-action {
-            padding: 0.5rem;
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .post-action:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .posts-filter {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .loading-text {
-            color: var(--text-muted);
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .calendar-loading {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-        }
-
-        .large-modal .modal-content {
-            max-width: 900px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .schedule-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .calendar-controls {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .weekdays-selector {
-                justify-content: center;
-            }
-        }
-    </style>
-
+    <!-- JavaScript -->
     <script src="/static/js/dashboard.js"></script>
-    <script src="/static/js/schedule.js"></script>
+    <script>
+        console.log('📅 Schedule page loaded');
+
+        // Форма создания расписания
+        document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const scheduleData = Object.fromEntries(formData);
+            
+            // Собрать выбранные аккаунты
+            const selectedAccounts = [];
+            document.querySelectorAll('input[name="accounts"]:checked').forEach(cb => {
+                selectedAccounts.push(cb.value);
+            });
+            scheduleData.accounts = selectedAccounts;
+
+            console.log('📅 Creating schedule:', scheduleData);
+
+            try {
+                const response = await fetch('/api/tasks/generate-schedule', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(scheduleData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`✅ Расписание "${scheduleData.schedule_name}" создано!\n📋 Создано задач: ${result.tasks_created}\n📅 Период: ${scheduleData.period}`);
+                    loadTasks();
+                    this.reset();
+                } else {
+                    alert('❌ Ошибка создания расписания: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Schedule creation error:', error);
+                alert('❌ Ошибка: ' + error.message);
+            }
+        });
+
+        // Быстрое автоматическое расписание
+        async function generateAutoSchedule() {
+            const confirmed = confirm('🤖 Создать автоматическое расписание?\n\n📋 Параметры:\n• Период: 7 дней\n• Публикаций в день: 3\n• Время: 09:00 - 22:00\n• Аккаунты: все активные');
+            
+            if (confirmed) {
+                console.log('🤖 Generating auto schedule...');
+                
+                try {
+                    const response = await fetch('/api/tasks/generate-schedule', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            schedule_name: 'Автоматическое расписание',
+                            period: 'week',
+                            posts_per_day: 3,
+                            start_time: '09:00',
+                            end_time: '22:00',
+                            content_category: 'mixed',
+                            posting_strategy: 'optimal',
+                            accounts: ['demo_fashion', 'demo_lifestyle']
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(`🤖 Автоматическое расписание создано!\n✅ Создано задач: ${result.tasks_created}\n📈 Публикаций в день: 3\n🕒 Время: 09:00 - 22:00`);
+                        loadTasks();
+                    } else {
+                        alert('❌ Ошибка: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Auto schedule error:', error);
+                    alert('❌ Ошибка: ' + error.message);
+                }
+            }
+        }
+
+        // Предварительный просмотр расписания
+        function previewSchedule() {
+            const formData = new FormData(document.getElementById('scheduleForm'));
+            const scheduleData = Object.fromEntries(formData);
+            
+            const selectedAccounts = [];
+            document.querySelectorAll('input[name="accounts"]:checked').forEach(cb => {
+                selectedAccounts.push(cb.value);
+            });
+
+            console.log('👁️ Preview schedule:', scheduleData);
+            
+            alert(`👁️ Предварительный просмотр расписания:\n\n📋 Название: ${scheduleData.schedule_name}\n📅 Период: ${scheduleData.period}\n📊 Публикаций в день: ${scheduleData.posts_per_day}\n🕒 Время: ${scheduleData.start_time} - ${scheduleData.end_time}\n👥 Аккаунты: ${selectedAccounts.join(', ')}\n📱 Стратегия: ${scheduleData.posting_strategy}`);
+        }
+
+        // Управление задачами
+        async function loadTasks() {
+            try {
+                console.log('📋 Loading tasks...');
+                const response = await fetch('/api/tasks/');
+                const tasks = await response.json();
+                
+                console.log('✅ Loaded tasks:', tasks.length);
+                // Здесь можно обновить отображение задач
+            } catch (error) {
+                console.error('❌ Error loading tasks:', error);
+            }
+        }
+
+        async function refreshTasks() {
+            console.log('🔄 Refreshing tasks...');
+            await loadTasks();
+        }
+
+        function editTask(taskId) {
+            console.log('✏️ Editing task:', taskId);
+            alert(`✏️ Редактирование задачи #${taskId}\n(В полной версии откроется модальное окно)`);
+        }
+
+        function cancelTask(taskId) {
+            if (confirm(`❌ Отменить публикацию задачи #${taskId}?`)) {
+                console.log('❌ Cancelling task:', taskId);
+                alert(`❌ Задача #${taskId} отменена`);
+            }
+        }
+
+        function approveTask(taskId) {
+            console.log('✅ Approving task:', taskId);
+            alert(`✅ Задача #${taskId} одобрена для публикации`);
+        }
+
+        function viewResults(taskId) {
+            console.log('📊 Viewing results for task:', taskId);
+            alert(`📊 Результаты публикации #${taskId}:\n\n👁️ Просмотры: 1,234\n❤️ Лайки: 156\n💬 Комментарии: 23\n🔄 Репосты: 12\n📈 Охват: 2,345`);
+        }
+
+        // Фильтры задач
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                console.log('🔍 Filtering tasks by:', filter);
+                filterTasks(filter);
+            });
+        });
+
+        function filterTasks(filter) {
+            const tasks = document.querySelectorAll('.task-item');
+            
+            tasks.forEach(task => {
+                if (filter === 'all' || task.dataset.status === filter) {
+                    task.style.display = 'block';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Schedule page initialized');
+            loadTasks();
+        });
+    </script>
 </body>
 </html> 
