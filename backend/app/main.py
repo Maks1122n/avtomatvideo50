@@ -2,6 +2,7 @@
 # TIMESTAMP: 1737228300 - FORCE DEPLOYMENT UPDATE
 # MediaFlux Hub - Instagram Automation Platform
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -28,7 +29,7 @@ async def lifespan(app: FastAPI):
     if API_AVAILABLE:
         logger.info("✅ API endpoints активны")
     else:
-        logger.warning("⚠️ API endpoints недоступны")
+        logger.warning("⚠️ Running without API endpoints")
     yield
     logger.info("🛑 MediaFlux Hub останавливается...")
 
@@ -40,11 +41,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Шаблоны - PRODUCTION PATH (from /app/app/ to /app/templates/)
-templates = Jinja2Templates(directory="templates")
+# УМНОЕ ОПРЕДЕЛЕНИЕ ПУТЕЙ ДЛЯ ЛОКАЛЬНОЙ РАЗРАБОТКИ И PRODUCTION
+is_production = os.getenv("RENDER") is not None or os.path.exists("/app")
 
-# Статические файлы - PRODUCTION PATH (from /app/app/ to /app/static/)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+if is_production:
+    templates_dir = "templates"
+    static_dir = "static"
+    logger.info("🌐 PRODUCTION MODE: Using production paths")
+else:
+    templates_dir = "../templates"
+    static_dir = "../static"
+    logger.info("💻 DEVELOPMENT MODE: Using local development paths")
+
+# Шаблоны и статические файлы с автоматическим определением путей
+templates = Jinja2Templates(directory=templates_dir)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Подключение API роутеров ТОЛЬКО если доступны
 if API_AVAILABLE:
