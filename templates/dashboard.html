@@ -1422,10 +1422,12 @@
             z-index: 999;
             opacity: 0;
             transition: var(--transition-smooth);
+            pointer-events: none;
         }
 
         .mobile-overlay.show {
             opacity: 1;
+            pointer-events: auto;
         }
 
         /* RESPONSIVE STYLES */
@@ -1435,18 +1437,13 @@
             }
 
             .sidebar {
-                position: fixed;
                 left: -100%;
-                top: 0;
-                height: 100vh;
-                transition: var(--transition-smooth);
                 z-index: 1001;
-                width: var(--sidebar-width);
                 box-shadow: var(--shadow-xl);
             }
 
             .sidebar.mobile-open {
-                left: 0;
+                left: 0 !important;
             }
 
             .main-content {
